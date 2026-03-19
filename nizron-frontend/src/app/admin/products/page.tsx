@@ -28,6 +28,9 @@ export default function ProductsAdmin() {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Create Product Form State
+  const [newName, setNewName] = useState('');
+  const [newDescription, setNewDescription] = useState('');
+  const [newDocUrl, setNewDocUrl] = useState('');
   const [newFeatures, setNewFeatures] = useState<string[]>(['']);
   
   // Fetch Products
@@ -45,6 +48,29 @@ export default function ProductsAdmin() {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
     },
   });
+
+  // Create Mutation
+  const createMutation = useMutation({
+    mutationFn: (newProduct: Partial<Product>) => apiClient.post('/products', newProduct),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      setIsModalOpen(false);
+      setNewName('');
+      setNewDescription('');
+      setNewDocUrl('');
+      setNewFeatures(['']);
+    },
+  });
+
+  const handleCreate = () => {
+    if (!newName || !newDescription) return;
+    createMutation.mutate({
+      name: newName,
+      description: newDescription,
+      productUsePdf: newDocUrl,
+      features: newFeatures.filter(f => f.trim() !== '')
+    });
+  };
 
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -246,17 +272,17 @@ export default function ProductsAdmin() {
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">Product Name</label>
-                       <input type="text" className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="e.g. Nizron Analytics Core" />
+                       <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="e.g. Nizron Analytics Core" />
                     </div>
                     <div className="space-y-2">
                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">Documentation (PDF URL)</label>
-                       <input type="text" className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="https://cdn.nizron.com/docs/man-v1.pdf" />
+                       <input type="text" value={newDocUrl} onChange={(e) => setNewDocUrl(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="https://cdn.nizron.com/docs/man-v1.pdf" />
                     </div>
                  </div>
 
                  <div className="space-y-2">
                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">Detailed Description</label>
-                   <textarea rows={3} className="w-full bg-white/5 border border-white/5 rounded-xl p-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium resize-none" placeholder="Provide a high-level summary of the product's value proposition..." />
+                   <textarea rows={3} value={newDescription} onChange={(e) => setNewDescription(e.target.value)} className="w-full bg-white/5 border border-white/5 rounded-xl p-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium resize-none" placeholder="Provide a high-level summary of the product's value proposition..." />
                  </div>
 
                  <div className="space-y-4">
@@ -272,8 +298,14 @@ export default function ProductsAdmin() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                        {newFeatures.map((f, idx) => (
                          <div key={idx} className="relative group">
-                            <input 
+                             <input 
                               type="text" 
+                              value={f}
+                              onChange={(e) => {
+                                const arr = [...newFeatures];
+                                arr[idx] = e.target.value;
+                                setNewFeatures(arr);
+                              }}
                               className="w-full h-11 bg-white/5 border border-white/5 rounded-xl px-4 pr-10 outline-none text-white text-xs focus:border-primary/50 transition-all" 
                               placeholder={`Feature #${idx+1}`}
                             />
@@ -292,8 +324,12 @@ export default function ProductsAdmin() {
 
                  <div className="pt-8 border-t border-white/5 flex gap-4">
                    <button onClick={() => setIsModalOpen(false)} className="flex-1 h-13 bg-white/5 text-slate-400 font-bold rounded-2xl text-sm hover:text-white hover:bg-white/10 transition-all">Cancel</button>
-                   <button className="flex-1 h-13 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center">
-                     Deploy into Registry <ChevronRight className="w-4 h-4 ml-2" />
+                   <button 
+                     onClick={handleCreate}
+                     disabled={createMutation.isPending || !newName || !newDescription}
+                     className="flex-1 h-13 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                   >
+                     {createMutation.isPending ? 'Deploying...' : 'Deploy into Registry'} <ChevronRight className="w-4 h-4 ml-2" />
                    </button>
                  </div>
               </div>

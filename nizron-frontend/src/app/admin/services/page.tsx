@@ -22,6 +22,10 @@ export default function ServicesAdmin() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Service form state
+  const [newTitle, setNewTitle] = useState('');
+  const [newCategory, setNewCategory] = useState('');
+
   // Fetch Services
   const { data: response, isLoading } = useQuery<{ success: boolean; data: Service[] }>({
     queryKey: ['admin-services'],
@@ -37,6 +41,25 @@ export default function ServicesAdmin() {
       queryClient.invalidateQueries({ queryKey: ['admin-services'] });
     },
   });
+
+  // Create Mutation
+  const createMutation = useMutation({
+    mutationFn: (newService: Partial<Service>) => apiClient.post('/services', newService),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      setIsModalOpen(false);
+      setNewTitle('');
+      setNewCategory('');
+    },
+  });
+
+  const handleCreate = () => {
+    if (!newTitle || !newCategory) return;
+    createMutation.mutate({
+      title: newTitle,
+      category: newCategory,
+    });
+  };
 
   const filteredServices = services.filter(s => 
     s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -224,15 +247,21 @@ export default function ServicesAdmin() {
                  {/* Simplified Form for Placeholder */}
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2">Service Title</label>
-                   <input type="text" className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm" placeholder="e.g. Enterprise Cloud Solutions" />
+                   <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm" placeholder="e.g. Enterprise Cloud Solutions" />
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2">Category</label>
-                   <input type="text" className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm" placeholder="e.g. Cloud Infrastructure" />
+                   <input type="text" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm" placeholder="e.g. Cloud Infrastructure" />
                  </div>
                  <div className="pt-6 border-t border-white/5 flex gap-4">
                    <button onClick={() => setIsModalOpen(false)} className="flex-1 h-12 bg-white/5 text-slate-400 font-bold rounded-xl text-sm hover:text-white transition-colors">Cancel</button>
-                   <button className="flex-1 h-12 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20">Publish Service</button>
+                   <button 
+                     onClick={handleCreate}
+                     disabled={createMutation.isPending || !newTitle || !newCategory}
+                     className="flex-1 h-12 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                   >
+                     {createMutation.isPending ? 'Publishing...' : 'Publish Service'}
+                   </button>
                  </div>
               </div>
             </motion.div>

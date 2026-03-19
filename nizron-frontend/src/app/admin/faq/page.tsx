@@ -22,6 +22,11 @@ export default function FAQAdmin() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Form State
+  const [newCategory, setNewCategory] = useState('');
+  const [newQuestion, setNewQuestion] = useState('');
+  const [newAnswer, setNewAnswer] = useState('');
+
   // Fetch FAQs
   const { data: response, isLoading } = useQuery<{ success: boolean; data: FAQ[] }>({
     queryKey: ['admin-faq'],
@@ -37,6 +42,27 @@ export default function FAQAdmin() {
       queryClient.invalidateQueries({ queryKey: ['admin-faq'] });
     },
   });
+
+  // Create Mutation
+  const createMutation = useMutation({
+    mutationFn: (newFaq: Partial<FAQ>) => apiClient.post('/faq', newFaq),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-faq'] });
+      setIsModalOpen(false);
+      setNewCategory('');
+      setNewQuestion('');
+      setNewAnswer('');
+    },
+  });
+
+  const handleCreate = () => {
+    if (!newCategory || !newQuestion || !newAnswer) return;
+    createMutation.mutate({
+      category: newCategory,
+      questionTitle: newQuestion,
+      answer: newAnswer,
+    });
+  };
 
   const filteredFaqs = faqs.filter(f => 
     f.questionTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -197,23 +223,27 @@ export default function FAQAdmin() {
               <div className="space-y-6 relative z-10">
                  <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">Subject / Category</label>
-                    <input type="text" className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="E.g. Technical Support, Billing, Deployments" />
+                    <input type="text" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="E.g. Technical Support, Billing, Deployments" />
                  </div>
 
                  <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">The Inquiry (Question)</label>
-                    <input type="text" className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="E.g. How does the failover clustering work during outages?" />
+                    <input type="text" value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="E.g. How does the failover clustering work during outages?" />
                  </div>
 
                  <div className="space-y-2">
                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">Official Answer</label>
-                   <textarea rows={6} className="w-full bg-white/5 border border-white/5 rounded-xl p-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium resize-none leading-relaxed" placeholder="Provide a detailed, professional response to the inquiry above..." />
+                   <textarea rows={6} value={newAnswer} onChange={(e) => setNewAnswer(e.target.value)} className="w-full bg-white/5 border border-white/5 rounded-xl p-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium resize-none leading-relaxed" placeholder="Provide a detailed, professional response to the inquiry above..." />
                  </div>
 
                  <div className="pt-8 border-t border-white/5 flex gap-4">
                    <button onClick={() => setIsModalOpen(false)} className="px-6 h-13 bg-white/5 text-slate-400 font-bold rounded-2xl text-sm hover:text-white hover:bg-white/10 transition-all">Discard Edit</button>
-                   <button className="flex-1 h-13 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center">
-                     Publish Directive to Live DB <ChevronRight className="w-4 h-4 ml-2" />
+                   <button 
+                     onClick={handleCreate}
+                     disabled={createMutation.isPending || !newCategory || !newQuestion || !newAnswer}
+                     className="flex-1 h-13 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                     {createMutation.isPending ? 'Publishing...' : 'Publish Directive to Live DB'} <ChevronRight className="w-4 h-4 ml-2" />
                    </button>
                  </div>
               </div>

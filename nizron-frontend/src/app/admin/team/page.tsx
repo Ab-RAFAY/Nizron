@@ -24,6 +24,9 @@ export default function TeamAdmin() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // State for Create Team Member Modal
+  const [newName, setNewName] = useState('');
+  const [newDesignation, setNewDesignation] = useState('');
+  const [newImage, setNewImage] = useState('');
   const [newSkills, setNewSkills] = useState<string[]>(['']);
 
   // Fetch Team Members
@@ -41,6 +44,29 @@ export default function TeamAdmin() {
       queryClient.invalidateQueries({ queryKey: ['admin-team'] });
     },
   });
+
+  // Create Mutation
+  const createMutation = useMutation({
+    mutationFn: (newMember: Partial<TeamMember>) => apiClient.post('/teams', newMember),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-team'] });
+      setIsModalOpen(false);
+      setNewName('');
+      setNewDesignation('');
+      setNewImage('');
+      setNewSkills(['']);
+    },
+  });
+
+  const handleCreate = () => {
+    if (!newName || !newDesignation) return;
+    createMutation.mutate({
+      name: newName,
+      designation: newDesignation,
+      image: newImage,
+      skillSet: newSkills.filter(s => s.trim() !== '')
+    });
+  };
 
   const filteredTeam = team.filter(m =>
     m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -229,11 +255,11 @@ export default function TeamAdmin() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">Full Name</label>
-                    <input type="text" className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="E.g. Sarah Jenkins" />
+                    <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="E.g. Sarah Jenkins" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">Designation</label>
-                    <input type="text" className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="E.g. Lead React Architect" />
+                    <input type="text" value={newDesignation} onChange={(e) => setNewDesignation(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="E.g. Lead React Architect" />
                   </div>
                 </div>
 
@@ -241,7 +267,7 @@ export default function TeamAdmin() {
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2 flex items-center">
                     Avatar URL <ImageIcon className="w-3 h-3 ml-1" />
                   </label>
-                  <input type="text" className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="https://cdn.nizron.com/avatars/sarah.jpg" />
+                  <input type="text" value={newImage} onChange={(e) => setNewImage(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="https://cdn.nizron.com/avatars/sarah.jpg" />
                 </div>
 
                 <div className="space-y-4 pt-4 border-t border-white/5">
@@ -260,6 +286,12 @@ export default function TeamAdmin() {
                       <div key={idx} className="relative group">
                         <input
                           type="text"
+                          value={s}
+                          onChange={(e) => {
+                            const newArr = [...newSkills];
+                            newArr[idx] = e.target.value;
+                            setNewSkills(newArr);
+                          }}
                           className="w-full h-10 bg-white/5 border border-white/5 rounded-xl px-4 pr-10 outline-none text-white text-xs focus:border-primary/50 transition-all"
                           placeholder={`Competency #${idx + 1}`}
                         />
@@ -278,8 +310,12 @@ export default function TeamAdmin() {
 
                 <div className="pt-8 border-t border-white/5 flex gap-4">
                   <button onClick={() => setIsModalOpen(false)} className="px-6 h-13 bg-white/5 text-slate-400 font-bold rounded-2xl text-sm hover:text-white hover:bg-white/10 transition-all">Cancel Routine</button>
-                  <button className="flex-1 h-13 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center">
-                    Authorize Onboarding <ChevronRight className="w-4 h-4 ml-2" />
+                  <button 
+                    onClick={handleCreate}
+                    disabled={createMutation.isPending || !newName || !newDesignation}
+                    className="flex-1 h-13 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {createMutation.isPending ? 'Authorizing...' : 'Authorize Onboarding'} <ChevronRight className="w-4 h-4 ml-2" />
                   </button>
                 </div>
               </div>
