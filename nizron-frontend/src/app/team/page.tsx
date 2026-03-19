@@ -113,30 +113,16 @@ export default function TeamGallery() {
                            <span className="text-[11px] uppercase font-bold tracking-[0.3em]">Neural Skill Matrix</span>
                         </div>
                         
-                        <div className="grid grid-cols-1 gap-6">
-                           {member.skillSet.map((skill, skillIdx) => {
-                             const level = 70 + (skill.length * 3) % 30; 
-                             
-                             return (
-                               <div key={skillIdx} className="space-y-3">
-                                 <div className="flex justify-between items-center px-1">
-                                   <span className="text-sm font-bold text-slate-300">{skill}</span>
-                                   <span className="text-[11px] font-bold text-slate-500 tracking-wider">{level}% Accuracy</span>
-                                 </div>
-                                 <div className="w-full h-2.5 bg-white/[0.02] rounded-full overflow-hidden border border-white/5 p-0.5 shadow-inner">
-                                   <motion.div 
-                                     className="h-full bg-vibrant rounded-full relative"
-                                     initial={{ width: 0 }}
-                                     whileInView={{ width: `${level}%` }}
-                                     viewport={{ once: true }}
-                                     transition={{ duration: 1.5, delay: 0.3 + (skillIdx * 0.1), type: "spring", stiffness: 80 }}
-                                   >
-                                      <div className="absolute top-0 right-0 bottom-0 w-8 bg-white/20 blur-[4px] rounded-full" />
-                                   </motion.div>
-                                 </div>
-                               </div>
-                             );
-                           })}
+                        <div className="flex flex-wrap gap-2.5">
+                           {member.skillSet.map((skill, skillIdx) => (
+                             <div 
+                               key={skillIdx} 
+                               className="px-4 py-2 bg-white/[0.03] border border-white/10 rounded-xl text-[11px] font-bold text-slate-400 group-hover:text-indigo-300 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/20 transition-all duration-300 flex items-center"
+                             >
+                                <div className="w-1 h-1 rounded-full bg-indigo-500/50 mr-2 group-hover:bg-indigo-400 transition-colors" />
+                                {skill}
+                             </div>
+                           ))}
                         </div>
                       </div>
 
