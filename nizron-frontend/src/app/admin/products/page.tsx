@@ -27,7 +27,8 @@ export default function ProductsAdmin() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Create Product Form State
+  // Create/Edit Product Form State
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newDocUrl, setNewDocUrl] = useState('');
@@ -54,22 +55,52 @@ export default function ProductsAdmin() {
     mutationFn: (newProduct: Partial<Product>) => apiClient.post('/products', newProduct),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
-      setIsModalOpen(false);
-      setNewName('');
-      setNewDescription('');
-      setNewDocUrl('');
-      setNewFeatures(['']);
+      resetModal();
     },
   });
 
-  const handleCreate = () => {
+  // Update Mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Product> }) => 
+      apiClient.patch(`/products/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      resetModal();
+    },
+  });
+
+  const resetModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setNewName('');
+    setNewDescription('');
+    setNewDocUrl('');
+    setNewFeatures(['']);
+  };
+
+  const handleOpenEdit = (product: Product) => {
+    setEditingId(product.id);
+    setNewName(product.name);
+    setNewDescription(product.description);
+    setNewDocUrl(product.productUsePdf || '');
+    setNewFeatures(product.features.length > 0 ? product.features : ['']);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = () => {
     if (!newName || !newDescription) return;
-    createMutation.mutate({
+    const payload = {
       name: newName,
       description: newDescription,
       productUsePdf: newDocUrl,
       features: newFeatures.filter(f => f.trim() !== '')
-    });
+    };
+
+    if (editingId) {
+      updateMutation.mutate({ id: editingId, data: payload });
+    } else {
+      createMutation.mutate(payload);
+    }
   };
 
   const filteredProducts = products.filter(p => 
@@ -211,7 +242,7 @@ export default function ProductsAdmin() {
                   </td>
                   <td className="px-8 py-5 text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="p-2 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all active:scale-95">
+                      <button onClick={() => handleOpenEdit(product)} className="p-2 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all active:scale-95">
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button 
@@ -260,10 +291,14 @@ export default function ProductsAdmin() {
               <div className="absolute top-0 right-0 p-12 bg-primary/20 blur-[100px] pointer-events-none" />
               <div className="flex items-center justify-between mb-8 relative z-10">
                 <div>
-                   <h2 className="text-2xl font-bold text-white font-header">New Platform Submission</h2>
-                   <p className="text-slate-500 text-sm">Register a new software product into the Nizron registry</p>
+                   <h2 className="text-2xl font-bold text-white font-header">
+                     {editingId ? 'Edit Product Parameters' : 'New Platform Submission'}
+                   </h2>
+                   <p className="text-slate-500 text-sm">
+                     {editingId ? 'Modify existing product specifications' : 'Register a new software product into the Nizron registry'}
+                   </p>
                 </div>
-                <button onClick={() => setIsModalOpen(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+                <button onClick={resetModal} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
                   <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
@@ -323,13 +358,13 @@ export default function ProductsAdmin() {
                  </div>
 
                  <div className="pt-8 border-t border-white/5 flex gap-4">
-                   <button onClick={() => setIsModalOpen(false)} className="flex-1 h-13 bg-white/5 text-slate-400 font-bold rounded-2xl text-sm hover:text-white hover:bg-white/10 transition-all">Cancel</button>
+                   <button onClick={resetModal} className="flex-1 h-13 bg-white/5 text-slate-400 font-bold rounded-2xl text-sm hover:text-white hover:bg-white/10 transition-all">Cancel</button>
                    <button 
-                     onClick={handleCreate}
-                     disabled={createMutation.isPending || !newName || !newDescription}
+                     onClick={handleSubmit}
+                     disabled={createMutation.isPending || updateMutation.isPending || !newName || !newDescription}
                      className="flex-1 h-13 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                    >
-                     {createMutation.isPending ? 'Deploying...' : 'Deploy into Registry'} <ChevronRight className="w-4 h-4 ml-2" />
+                     {createMutation.isPending || updateMutation.isPending ? 'Processing...' : (editingId ? 'Update Registry' : 'Deploy into Registry')} <ChevronRight className="w-4 h-4 ml-2" />
                    </button>
                  </div>
               </div>

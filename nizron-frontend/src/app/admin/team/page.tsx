@@ -23,7 +23,8 @@ export default function TeamAdmin() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // State for Create Team Member Modal
+  // State for Create/Edit Team Member Modal
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
   const [newDesignation, setNewDesignation] = useState('');
   const [newImage, setNewImage] = useState('');
@@ -50,22 +51,52 @@ export default function TeamAdmin() {
     mutationFn: (newMember: Partial<TeamMember>) => apiClient.post('/teams', newMember),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-team'] });
-      setIsModalOpen(false);
-      setNewName('');
-      setNewDesignation('');
-      setNewImage('');
-      setNewSkills(['']);
+      resetModal();
     },
   });
 
-  const handleCreate = () => {
+  // Update Mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<TeamMember> }) => 
+      apiClient.patch(`/teams/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-team'] });
+      resetModal();
+    },
+  });
+
+  const resetModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setNewName('');
+    setNewDesignation('');
+    setNewImage('');
+    setNewSkills(['']);
+  };
+
+  const handleOpenEdit = (member: TeamMember) => {
+    setEditingId(member.id);
+    setNewName(member.name);
+    setNewDesignation(member.designation);
+    setNewImage(member.image || '');
+    setNewSkills(member.skillSet.length > 0 ? member.skillSet : ['']);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = () => {
     if (!newName || !newDesignation) return;
-    createMutation.mutate({
+    const payload = {
       name: newName,
       designation: newDesignation,
       image: newImage,
       skillSet: newSkills.filter(s => s.trim() !== '')
-    });
+    };
+    
+    if (editingId) {
+      updateMutation.mutate({ id: editingId, data: payload });
+    } else {
+      createMutation.mutate(payload);
+    }
   };
 
   const filteredTeam = team.filter(m =>
@@ -197,7 +228,7 @@ export default function TeamAdmin() {
                   </td>
                   <td className="px-8 py-5 text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="p-2 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all active:scale-95 group/btn">
+                      <button onClick={() => handleOpenEdit(member)} className="p-2 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all active:scale-95 group/btn">
                         <Edit2 className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                       </button>
                       <button
@@ -243,10 +274,14 @@ export default function TeamAdmin() {
               <div className="absolute top-0 right-0 p-12 bg-primary/20 blur-[100px] pointer-events-none" />
               <div className="flex items-center justify-between mb-8 relative z-10">
                 <div>
-                  <h2 className="text-2xl font-bold text-white font-header">Onboard Engineer</h2>
-                  <p className="text-slate-500 text-sm">Add a new professional to the Nizron directory</p>
+                  <h2 className="text-2xl font-bold text-white font-header">
+                    {editingId ? 'Edit Team Member' : 'Onboard Engineer'}
+                  </h2>
+                  <p className="text-slate-500 text-sm">
+                    {editingId ? 'Update professional profile data' : 'Add a new professional to the Nizron directory'}
+                  </p>
                 </div>
-                <button onClick={() => setIsModalOpen(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+                <button onClick={resetModal} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
                   <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
@@ -309,13 +344,13 @@ export default function TeamAdmin() {
                 </div>
 
                 <div className="pt-8 border-t border-white/5 flex gap-4">
-                  <button onClick={() => setIsModalOpen(false)} className="px-6 h-13 bg-white/5 text-slate-400 font-bold rounded-2xl text-sm hover:text-white hover:bg-white/10 transition-all">Cancel Routine</button>
+                  <button onClick={resetModal} className="px-6 h-13 bg-white/5 text-slate-400 font-bold rounded-2xl text-sm hover:text-white hover:bg-white/10 transition-all">Cancel</button>
                   <button 
-                    onClick={handleCreate}
-                    disabled={createMutation.isPending || !newName || !newDesignation}
+                    onClick={handleSubmit}
+                    disabled={createMutation.isPending || updateMutation.isPending || !newName || !newDesignation}
                     className="flex-1 h-13 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {createMutation.isPending ? 'Authorizing...' : 'Authorize Onboarding'} <ChevronRight className="w-4 h-4 ml-2" />
+                    {createMutation.isPending || updateMutation.isPending ? 'Processing...' : (editingId ? 'Save Changes' : 'Authorize Onboarding')} <ChevronRight className="w-4 h-4 ml-2" />
                   </button>
                 </div>
               </div>

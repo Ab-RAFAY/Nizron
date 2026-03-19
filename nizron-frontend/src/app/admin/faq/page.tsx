@@ -23,6 +23,7 @@ export default function FAQAdmin() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Form State
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [newCategory, setNewCategory] = useState('');
   const [newQuestion, setNewQuestion] = useState('');
   const [newAnswer, setNewAnswer] = useState('');
@@ -48,20 +49,49 @@ export default function FAQAdmin() {
     mutationFn: (newFaq: Partial<FAQ>) => apiClient.post('/faq', newFaq),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-faq'] });
-      setIsModalOpen(false);
-      setNewCategory('');
-      setNewQuestion('');
-      setNewAnswer('');
+      resetModal();
     },
   });
 
-  const handleCreate = () => {
+  // Update Mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<FAQ> }) => 
+      apiClient.patch(`/faq/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-faq'] });
+      resetModal();
+    },
+  });
+
+  const resetModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setNewCategory('');
+    setNewQuestion('');
+    setNewAnswer('');
+  };
+
+  const handleOpenEdit = (faq: FAQ) => {
+    setEditingId(faq.id);
+    setNewCategory(faq.category);
+    setNewQuestion(faq.questionTitle);
+    setNewAnswer(faq.answer);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = () => {
     if (!newCategory || !newQuestion || !newAnswer) return;
-    createMutation.mutate({
+    const payload = {
       category: newCategory,
       questionTitle: newQuestion,
       answer: newAnswer,
-    });
+    };
+
+    if (editingId) {
+      updateMutation.mutate({ id: editingId, data: payload });
+    } else {
+      createMutation.mutate(payload);
+    }
   };
 
   const filteredFaqs = faqs.filter(f => 
@@ -166,7 +196,7 @@ export default function FAQAdmin() {
                   </td>
                   <td className="px-8 py-5 text-right align-top pt-6">
                     <div className="flex items-center justify-end space-x-2">
-                       <button className="p-2 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all active:scale-95 group/btn">
+                       <button onClick={() => handleOpenEdit(faq)} className="p-2 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all active:scale-95 group/btn">
                          <Edit2 className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                        </button>
                        <button 
@@ -212,10 +242,14 @@ export default function FAQAdmin() {
               <div className="absolute top-0 right-0 p-12 bg-primary/20 blur-[100px] pointer-events-none" />
               <div className="flex items-center justify-between mb-8 relative z-10">
                 <div>
-                   <h2 className="text-2xl font-bold text-white font-header">New Knowledge Directive</h2>
-                   <p className="text-slate-500 text-sm">Add a new official answer to the public database.</p>
+                   <h2 className="text-2xl font-bold text-white font-header">
+                     {editingId ? 'Edit Knowledge Directive' : 'New Knowledge Directive'}
+                   </h2>
+                   <p className="text-slate-500 text-sm">
+                     {editingId ? 'Modify stored procedural intelligence' : 'Add a new official answer to the public database.'}
+                   </p>
                 </div>
-                <button onClick={() => setIsModalOpen(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+                <button onClick={resetModal} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
                   <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
@@ -237,13 +271,13 @@ export default function FAQAdmin() {
                  </div>
 
                  <div className="pt-8 border-t border-white/5 flex gap-4">
-                   <button onClick={() => setIsModalOpen(false)} className="px-6 h-13 bg-white/5 text-slate-400 font-bold rounded-2xl text-sm hover:text-white hover:bg-white/10 transition-all">Discard Edit</button>
+                   <button onClick={resetModal} className="px-6 h-13 bg-white/5 text-slate-400 font-bold rounded-2xl text-sm hover:text-white hover:bg-white/10 transition-all">Discard Edit</button>
                    <button 
-                     onClick={handleCreate}
-                     disabled={createMutation.isPending || !newCategory || !newQuestion || !newAnswer}
+                     onClick={handleSubmit}
+                     disabled={createMutation.isPending || updateMutation.isPending || !newCategory || !newQuestion || !newAnswer}
                      className="flex-1 h-13 bg-primary text-white font-bold rounded-2xl text-sm shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                     {createMutation.isPending ? 'Publishing...' : 'Publish Directive to Live DB'} <ChevronRight className="w-4 h-4 ml-2" />
+                     {createMutation.isPending || updateMutation.isPending ? 'Processing...' : (editingId ? 'Update Directive' : 'Publish Directive to Live DB')} <ChevronRight className="w-4 h-4 ml-2" />
                    </button>
                  </div>
               </div>

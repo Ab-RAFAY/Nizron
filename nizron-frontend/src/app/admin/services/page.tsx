@@ -23,6 +23,7 @@ export default function ServicesAdmin() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Service form state
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [newCategory, setNewCategory] = useState('');
 
@@ -43,22 +44,50 @@ export default function ServicesAdmin() {
   });
 
   // Create Mutation
-  const createMutation = useMutation({
+   const createMutation = useMutation({
     mutationFn: (newService: Partial<Service>) => apiClient.post('/services', newService),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-services'] });
-      setIsModalOpen(false);
-      setNewTitle('');
-      setNewCategory('');
+      resetModal();
     },
   });
 
-  const handleCreate = () => {
+  // Update Mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Service> }) => 
+      apiClient.patch(`/services/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      resetModal();
+    },
+  });
+
+  const resetModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setNewTitle('');
+    setNewCategory('');
+  };
+
+  const handleOpenEdit = (service: Service) => {
+    setEditingId(service.id);
+    setNewTitle(service.title);
+    setNewCategory(service.category);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = () => {
     if (!newTitle || !newCategory) return;
-    createMutation.mutate({
+    const payload = {
       title: newTitle,
       category: newCategory,
-    });
+    };
+
+    if (editingId) {
+      updateMutation.mutate({ id: editingId, data: payload });
+    } else {
+      createMutation.mutate(payload);
+    }
   };
 
   const filteredServices = services.filter(s => 
@@ -78,7 +107,7 @@ export default function ServicesAdmin() {
           <p className="text-slate-500 text-sm font-medium">Create, update and manage your service catalog</p>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => { resetModal(); setIsModalOpen(true); }}
           className="px-6 h-12 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center hover:shadow-primary/40 active:scale-95 transition-all text-sm"
         >
           <Plus className="w-5 h-5 mr-1" /> Add New Service
@@ -191,9 +220,9 @@ export default function ServicesAdmin() {
                       <span className="text-[10px] font-bold uppercase text-slate-400">Published</span>
                     </div>
                   </td>
-                  <td className="px-8 py-5 text-right">
+                   <td className="px-8 py-5 text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="p-2 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all active:scale-95">
+                      <button onClick={() => handleOpenEdit(service)} className="p-2 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all active:scale-95">
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button 
@@ -230,18 +259,22 @@ export default function ServicesAdmin() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)}
+              onClick={resetModal}
               className="absolute inset-0 bg-black/80 backdrop-blur-md"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-[600px] bg-[#0f0f0f] border border-white/10 rounded-[2.5rem] relative z-10 p-10 shadow-2xl overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 p-12 bg-primary/20 blur-[100px] pointer-events-none" />
-              <h2 className="text-2xl font-bold text-white mb-2 font-header">Create Service</h2>
-              <p className="text-slate-500 text-sm mb-8">Enter the service details to publish to the public website.</p>
+             <motion.div
+               initial={{ opacity: 0, scale: 0.95, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.95, y: 20 }}
+               className="w-full max-w-[600px] bg-[#0f0f0f] border border-white/10 rounded-[2.5rem] relative z-10 p-10 shadow-2xl overflow-hidden"
+             >
+               <div className="absolute top-0 right-0 p-12 bg-primary/20 blur-[100px] pointer-events-none" />
+               <h2 className="text-2xl font-bold text-white mb-2 font-header">
+                 {editingId ? 'Update Service Parameters' : 'Create Service'}
+               </h2>
+               <p className="text-slate-500 text-sm mb-8">
+                 {editingId ? 'Modify existing catalog directives' : 'Enter the service details to publish to the public website.'}
+               </p>
               
               <div className="space-y-6">
                  {/* Simplified Form for Placeholder */}
@@ -253,14 +286,14 @@ export default function ServicesAdmin() {
                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2">Category</label>
                    <input type="text" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm" placeholder="e.g. Cloud Infrastructure" />
                  </div>
-                 <div className="pt-6 border-t border-white/5 flex gap-4">
-                   <button onClick={() => setIsModalOpen(false)} className="flex-1 h-12 bg-white/5 text-slate-400 font-bold rounded-xl text-sm hover:text-white transition-colors">Cancel</button>
+                  <div className="pt-6 border-t border-white/5 flex gap-4">
+                   <button onClick={resetModal} className="flex-1 h-12 bg-white/5 text-slate-400 font-bold rounded-xl text-sm hover:text-white transition-colors">Cancel</button>
                    <button 
-                     onClick={handleCreate}
-                     disabled={createMutation.isPending || !newTitle || !newCategory}
+                     onClick={handleSubmit}
+                     disabled={createMutation.isPending || updateMutation.isPending || !newTitle || !newCategory}
                      className="flex-1 h-12 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                    >
-                     {createMutation.isPending ? 'Publishing...' : 'Publish Service'}
+                     {createMutation.isPending || updateMutation.isPending ? 'Processing...' : (editingId ? 'Update Record' : 'Publish Service')}
                    </button>
                  </div>
               </div>
