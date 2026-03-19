@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import * as express from 'express';
 import { AppModule } from '../src/app.module';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
 import { TransformInterceptor } from '../src/common/interceptors/transform.interceptor';
 
+const express = require('express');
 const expressServer = express();
 
-export const createNestServer = async (expressInstance: express.Express) => {
+export const createNestServer = async (expressInstance: any) => {
   const app = await NestFactory.create(
     AppModule,
     new ExpressAdapter(expressInstance),
