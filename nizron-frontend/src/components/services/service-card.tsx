@@ -33,7 +33,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
       <div className="flex-1 space-y-8 relative z-10">
         <div className="space-y-3">
           <div className="inline-flex px-3 py-1 bg-white/[0.05] border border-white/10 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 rounded-lg group-hover:text-indigo-400 transition-colors">
-            {service.category}
+            {service.category.trim()}
           </div>
           <h3 className="text-3xl font-header font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-vibrant transition-all duration-300 leading-tight">
             {service.title}

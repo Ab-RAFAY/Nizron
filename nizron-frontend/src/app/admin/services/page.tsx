@@ -79,8 +79,8 @@ export default function ServicesAdmin() {
   const handleSubmit = () => {
     if (!newTitle || !newCategory) return;
     const payload = {
-      title: newTitle,
-      category: newCategory,
+      title: newTitle.trim(),
+      category: newCategory.trim(), // Automatically prevent trailing space issues
     };
 
     if (editingId) {
@@ -89,6 +89,9 @@ export default function ServicesAdmin() {
       createMutation.mutate(payload);
     }
   };
+
+  // Get unique existing categories for suggestion
+  const existingCategories = Array.from(new Set(services.map(s => s.category.trim())));
 
   const filteredServices = services.filter(s => 
     s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -284,7 +287,19 @@ export default function ServicesAdmin() {
                  </div>
                  <div className="space-y-2">
                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2">Category</label>
-                   <input type="text" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm" placeholder="e.g. Cloud Infrastructure" />
+                   <input 
+                     list="categories"
+                     type="text" 
+                     value={newCategory} 
+                     onChange={(e) => setNewCategory(e.target.value)} 
+                     className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm" 
+                     placeholder="e.g. Cloud Infrastructure" 
+                   />
+                   <datalist id="categories">
+                     {existingCategories.map(cat => (
+                       <option key={cat} value={cat} />
+                     ))}
+                   </datalist>
                  </div>
                   <div className="pt-6 border-t border-white/5 flex gap-4">
                    <button onClick={resetModal} className="flex-1 h-12 bg-white/5 text-slate-400 font-bold rounded-xl text-sm hover:text-white transition-colors">Cancel</button>

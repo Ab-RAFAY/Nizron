@@ -14,12 +14,13 @@ export default function ServicesGalleryClient({ initialServices: services }: Ser
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const categories = ['All', ...Array.from(new Set(services.map(s => s.category)))];
+  const categories = ['All', ...Array.from(new Set(services.map(s => s.category.trim())))];
 
   const filteredServices = services.filter(service => {
-    const matchesCategory = selectedCategory === 'All' || service.category === selectedCategory;
+    const trimmedCategory = service.category.trim();
+    const matchesCategory = selectedCategory === 'All' || trimmedCategory === selectedCategory;
     const matchesSearch = service.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         service.category.toLowerCase().includes(searchQuery.toLowerCase());
+                         trimmedCategory.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
