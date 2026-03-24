@@ -49,13 +49,12 @@ export class ServicesService {
   async update(id: string, updateServiceDto: UpdateServiceDto): Promise<ServiceEntity> {
     const service = await this.findOne(id);
     
-    // TypeORM cascading update for simple relations might drop existing ones if not handled perfectly,
-    // For a cleaner approach we recreate the relations or let TypeORM manage them via save.
-    // Given the prompt constraints, we'll try standard TypeORM array assignment on update if cascade true is set.
-    // However, missing IDs might trigger insert. We usually merge for simplicity.
-    
-    // Better way to do complex replace for embedded elements: delete existing then re-insert, or provide UI with DTOs containing IDs.
-    // For this CMS, we replace entirely from DTO if provided.
+    // If new service cards are provided, we replace the existing ones to avoid duplicates/stale data
+    if (updateServiceDto.serviceCards) {
+      // Direct repository access to clean up old relations
+      const cardRepo = this.servicesRepository.manager.getRepository('ServiceCard');
+      await cardRepo.delete({ service: { id } });
+    }
     
     const updatedService = this.servicesRepository.create({
       ...service,
