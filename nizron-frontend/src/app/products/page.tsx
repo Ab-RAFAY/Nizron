@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import Navbar from '@/components/layout/navbar';
 import Footer from '@/components/layout/footer';
 import ProductGalleryClient from '@/components/products/product-gallery-client';
@@ -24,7 +24,9 @@ export default async function ProductPage() {
     <main className="min-h-screen bg-[#080a0f] flex flex-col pt-16">
       <Navbar />
       <div className="max-w-6xl mx-auto px-6 w-full py-16 flex-1">
-        <ProductGalleryClient initialProducts={products} />
+        <Suspense fallback={<div className="text-slate-500 text-sm">Loading products...</div>}>
+          <ProductGalleryClient initialProducts={products} />
+        </Suspense>
       </div>
       <Footer />
     </main>

@@ -62,6 +62,11 @@ export class CreateServiceDto {
   @IsNotEmpty()
   category: string;
 
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  description?: string;
+
   @ApiPropertyOptional({ type: [CreateServiceCardDto] })
   @IsOptional()
   @IsArray()
@@ -94,6 +99,11 @@ export class UpdateServiceDto {
   @IsString()
   @IsOptional()
   category?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  description?: string;
 
   @ApiPropertyOptional({ type: [CreateServiceCardDto] })
   @IsOptional()

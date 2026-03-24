@@ -1,24 +1,44 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Product } from '@/types/product';
 import ProductCard from '@/components/products/product-card';
 import QuickView from '@/components/products/quick-view';
-import { Package, Search } from 'lucide-react';
+import { Package, Search, X } from 'lucide-react';
 
 interface ProductGalleryClientProps {
   initialProducts: Product[];
 }
 
 export default function ProductGalleryClient({ initialProducts: products }: ProductGalleryClientProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const urlCategory = searchParams.get('category') || '';
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(urlCategory);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Sync state if URL param changes (e.g., navigating back)
+  useEffect(() => {
+    setSelectedCategory(urlCategory);
+  }, [urlCategory]);
+
+  const categories = Array.from(new Set(products.map(p => p.category?.trim()).filter(Boolean)));
+
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          p.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !selectedCategory || p.category?.trim().toLowerCase() === selectedCategory.toLowerCase();
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleClearCategory = () => {
+    setSelectedCategory('');
+    router.replace('/products', { scroll: false });
+  };
 
   return (
     <>
@@ -52,6 +72,52 @@ export default function ProductGalleryClient({ initialProducts: products }: Prod
         </div>
       </div>
 
+      {/* Active category filter banner */}
+      {selectedCategory && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 mb-5 px-4 py-3 bg-indigo-600/10 border border-indigo-500/30 rounded-xl"
+        >
+          <span className="text-sm text-indigo-300 font-medium">
+            Showing products in: <strong className="text-white">{selectedCategory}</strong>
+          </span>
+          <button
+            onClick={handleClearCategory}
+            className="ml-auto flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors"
+          >
+            <X size={13} /> Clear filter
+          </button>
+        </motion.div>
+      )}
+
+      {/* Category filter pills */}
+      {categories.length > 0 && (
+        <div className="flex gap-2 flex-wrap mb-6">
+          <button
+            onClick={handleClearCategory}
+            className={`px-3 h-8 rounded-lg text-[12px] font-semibold transition-all duration-200 ${
+              !selectedCategory ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-white/[0.04] border border-white/[0.07] hover:text-white hover:bg-white/[0.08]'
+            }`}
+          >
+            All
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 h-8 rounded-lg text-[12px] font-semibold transition-all duration-200 ${
+                selectedCategory?.toLowerCase() === cat.toLowerCase() 
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                  : 'text-slate-400 bg-white/[0.04] border border-white/[0.07] hover:text-white hover:bg-white/[0.08]'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Grid */}
       <div className="relative min-h-[200px]">
         {filteredProducts.length > 0 ? (
@@ -79,7 +145,16 @@ export default function ProductGalleryClient({ initialProducts: products }: Prod
         ) : (
           <div className="text-center py-16 card rounded-xl">
             <Package className="w-8 h-8 text-slate-600 mx-auto mb-3" />
-            <p className="text-sm font-semibold text-slate-500">No products match your search.</p>
+            <p className="text-sm font-semibold text-slate-500">
+              {selectedCategory 
+                ? `No products found in the "${selectedCategory}" category.` 
+                : 'No products match your search.'}
+            </p>
+            {selectedCategory && (
+              <button onClick={handleClearCategory} className="mt-3 text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                Show all products
+              </button>
+            )}
           </div>
         )}
       </div>

@@ -14,6 +14,9 @@ export class ServiceEntity {
   @Column()
   category: string;
 
+  @Column('text', { nullable: true })
+  description: string;
+
   @OneToMany(() => ServiceCard, (card) => card.service, { cascade: true })
   serviceCards: Relation<ServiceCard[]>;
 

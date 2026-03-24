@@ -24,7 +24,8 @@ export interface Service {
   id: string;
   title: string;
   category: string;
+  description?: string;
   serviceCards: ServiceDetailCard[];
-  technologies: Technology[]; // Object-based for Neon compatibility
+  technologies: Technology[];
   pricingPlans: PricingPlan[];
 }

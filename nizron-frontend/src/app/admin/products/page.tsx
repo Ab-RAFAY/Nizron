@@ -30,6 +30,7 @@ export default function ProductsAdmin() {
   // Create/Edit Product Form State
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
+  const [newCategory, setNewCategory] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newDocUrl, setNewDocUrl] = useState('');
   const [newFeatures, setNewFeatures] = useState<string[]>(['']);
@@ -73,6 +74,7 @@ export default function ProductsAdmin() {
     setIsModalOpen(false);
     setEditingId(null);
     setNewName('');
+    setNewCategory('');
     setNewDescription('');
     setNewDocUrl('');
     setNewFeatures(['']);
@@ -81,6 +83,7 @@ export default function ProductsAdmin() {
   const handleOpenEdit = (product: Product) => {
     setEditingId(product.id);
     setNewName(product.name);
+    setNewCategory(product.category || '');
     setNewDescription(product.description);
     setNewDocUrl(product.productUsePdf || '');
     setNewFeatures(product.features.length > 0 ? product.features : ['']);
@@ -91,6 +94,7 @@ export default function ProductsAdmin() {
     if (!newName || !newDescription) return;
     const payload = {
       name: newName,
+      category: newCategory.trim(),
       description: newDescription,
       productUsePdf: newDocUrl,
       features: newFeatures.filter(f => f.trim() !== '')
@@ -310,8 +314,8 @@ export default function ProductsAdmin() {
                        <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="e.g. Nizron Analytics Core" />
                     </div>
                     <div className="space-y-2">
-                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">Documentation (PDF URL)</label>
-                       <input type="text" value={newDocUrl} onChange={(e) => setNewDocUrl(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="https://cdn.nizron.com/docs/man-v1.pdf" />
+                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-2">Category</label>
+                       <input type="text" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all font-medium" placeholder="e.g. Technical" />
                     </div>
                  </div>
 

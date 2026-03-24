@@ -13,7 +13,8 @@ import {
   LayoutGrid, 
   Layers, 
   TrendingUp, 
-  AlertCircle 
+  AlertCircle,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -26,6 +27,8 @@ export default function ServicesAdmin() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [newCategory, setNewCategory] = useState('');
+  const [newDescription, setNewDescription] = useState('');
+  const [newServiceCards, setNewServiceCards] = useState<{ title: string; description: string }[]>([{ title: '', description: '' }]);
 
   // Fetch Services
   const { data: response, isLoading } = useQuery<{ success: boolean; data: Service[] }>({
@@ -44,7 +47,7 @@ export default function ServicesAdmin() {
   });
 
   // Create Mutation
-   const createMutation = useMutation({
+  const createMutation = useMutation({
     mutationFn: (newService: Partial<Service>) => apiClient.post('/services', newService),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-services'] });
@@ -67,12 +70,20 @@ export default function ServicesAdmin() {
     setEditingId(null);
     setNewTitle('');
     setNewCategory('');
+    setNewDescription('');
+    setNewServiceCards([{ title: '', description: '' }]);
   };
 
   const handleOpenEdit = (service: Service) => {
     setEditingId(service.id);
     setNewTitle(service.title);
     setNewCategory(service.category);
+    setNewDescription(service.description || '');
+    setNewServiceCards(
+      service.serviceCards.length > 0 
+        ? service.serviceCards.map(c => ({ title: c.title, description: c.description })) 
+        : [{ title: '', description: '' }]
+    );
     setIsModalOpen(true);
   };
 
@@ -80,7 +91,9 @@ export default function ServicesAdmin() {
     if (!newTitle || !newCategory) return;
     const payload = {
       title: newTitle.trim(),
-      category: newCategory.trim(), // Automatically prevent trailing space issues
+      category: newCategory.trim(),
+      description: newDescription.trim(),
+      serviceCards: newServiceCards.filter(c => c.title.trim() !== ''),
     };
 
     if (editingId) {
@@ -89,6 +102,9 @@ export default function ServicesAdmin() {
       createMutation.mutate(payload);
     }
   };
+
+  const handleAddCard = () => setNewServiceCards([...newServiceCards, { title: '', description: '' }]);
+  const handleRemoveCard = (idx: number) => setNewServiceCards(newServiceCards.filter((_, i) => i !== idx));
 
   // Get unique existing categories for suggestion
   const existingCategories = Array.from(new Set(services.map(s => s.category.trim())));
@@ -99,7 +115,7 @@ export default function ServicesAdmin() {
   );
 
   const totalServices = services.length;
-  const categories = new Set(services.map(s => s.category)).size;
+  const categories = new Set(services.map(s => s.category.trim())).size;
 
   return (
     <div className="space-y-8 max-w-[1240px] mx-auto">
@@ -160,14 +176,6 @@ export default function ServicesAdmin() {
             className="w-full h-12 bg-white/5 border border-white/5 rounded-xl pl-12 pr-4 outline-none text-white text-sm focus:border-primary/50 transition-all"
           />
         </div>
-        <div className="flex gap-2">
-           <button className="px-4 h-12 bg-white/5 border border-white/5 text-slate-400 font-bold rounded-xl text-xs hover:text-white transition-colors">
-             Export CSV
-           </button>
-           <button className="px-4 h-12 bg-white/5 border border-white/5 text-slate-400 font-bold rounded-xl text-xs hover:text-white transition-colors">
-             Filters
-           </button>
-        </div>
       </div>
 
       {/* CRUD Table */}
@@ -177,8 +185,8 @@ export default function ServicesAdmin() {
             <tr className="bg-white/5 border-b border-white/5 text-slate-500">
               <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest">Service Title</th>
               <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest">Category</th>
+              <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest">Description</th>
               <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest">Tech Stack</th>
-              <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest">Status</th>
               <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-right">Actions</th>
             </tr>
           </thead>
@@ -202,7 +210,12 @@ export default function ServicesAdmin() {
                   </td>
                   <td className="px-8 py-5">
                     <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-slate-400 tracking-wider">
-                      {service.category}
+                      {service.category.trim()}
+                    </span>
+                  </td>
+                  <td className="px-8 py-5 max-w-[200px]">
+                    <span className="text-[11px] text-slate-500 line-clamp-2">
+                      {service.description || <span className="italic text-slate-700">No description</span>}
                     </span>
                   </td>
                   <td className="px-8 py-5">
@@ -217,12 +230,6 @@ export default function ServicesAdmin() {
                       )}
                     </div>
                   </td>
-                  <td className="px-8 py-5">
-                    <div className="flex items-center">
-                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2" />
-                      <span className="text-[10px] font-bold uppercase text-slate-400">Published</span>
-                    </div>
-                  </td>
                    <td className="px-8 py-5 text-right">
                     <div className="flex items-center justify-end space-x-2">
                       <button onClick={() => handleOpenEdit(service)} className="p-2 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded-lg transition-all active:scale-95">
@@ -230,7 +237,7 @@ export default function ServicesAdmin() {
                       </button>
                       <button 
                         onClick={() => deleteMutation.mutate(service.id)}
-                        className="p-2 bg-white/5 hover:bg-red-500/10 border border-white/5 text-slate-400 hover:text-red-400 rounded-lg transition-all active:scale-95"
+                        className="p-2 bg-white/5 hover:bg-red-500/10 border border-white/5 text-slateate-400 hover:text-red-400 rounded-lg transition-all active:scale-95"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -257,60 +264,125 @@ export default function ServicesAdmin() {
 
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={resetModal}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              className="fixed inset-0 bg-black/80 backdrop-blur-md"
             />
-             <motion.div
-               initial={{ opacity: 0, scale: 0.95, y: 20 }}
-               animate={{ opacity: 1, scale: 1, y: 0 }}
-               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-               className="w-full max-w-[600px] bg-[#0f0f0f] border border-white/10 rounded-[2.5rem] relative z-10 p-10 shadow-2xl overflow-hidden"
-             >
-               <div className="absolute top-0 right-0 p-12 bg-primary/20 blur-[100px] pointer-events-none" />
-               <h2 className="text-2xl font-bold text-white mb-2 font-header">
-                 {editingId ? 'Update Service Parameters' : 'Create Service'}
-               </h2>
-               <p className="text-slate-500 text-sm mb-8">
-                 {editingId ? 'Modify existing catalog directives' : 'Enter the service details to publish to the public website.'}
-               </p>
-              
-              <div className="space-y-6">
-                 {/* Simplified Form for Placeholder */}
-                 <div className="space-y-2">
-                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2">Service Title</label>
-                   <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm" placeholder="e.g. Enterprise Cloud Solutions" />
-                 </div>
-                 <div className="space-y-2">
-                   <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2">Category</label>
-                   <input 
-                     list="categories"
-                     type="text" 
-                     value={newCategory} 
-                     onChange={(e) => setNewCategory(e.target.value)} 
-                     className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm" 
-                     placeholder="e.g. Cloud Infrastructure" 
-                   />
-                   <datalist id="categories">
-                     {existingCategories.map(cat => (
-                       <option key={cat} value={cat} />
-                     ))}
-                   </datalist>
-                 </div>
-                  <div className="pt-6 border-t border-white/5 flex gap-4">
-                   <button onClick={resetModal} className="flex-1 h-12 bg-white/5 text-slate-400 font-bold rounded-xl text-sm hover:text-white transition-colors">Cancel</button>
-                   <button 
-                     onClick={handleSubmit}
-                     disabled={createMutation.isPending || updateMutation.isPending || !newTitle || !newCategory}
-                     className="flex-1 h-12 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                   >
-                     {createMutation.isPending || updateMutation.isPending ? 'Processing...' : (editingId ? 'Update Record' : 'Publish Service')}
-                   </button>
-                 </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="w-full max-w-[700px] bg-[#0f0f0f] border border-white/10 rounded-[2.5rem] relative z-10 p-10 shadow-2xl overflow-hidden my-auto"
+            >
+              <div className="absolute top-0 right-0 p-12 bg-primary/20 blur-[100px] pointer-events-none" />
+              <div className="flex items-center justify-between mb-8 relative z-10">
+                <div>
+                  <h2 className="text-2xl font-bold text-white font-header">
+                    {editingId ? 'Edit Service' : 'Add New Service'}
+                  </h2>
+                  <p className="text-slate-500 text-sm mt-1">
+                    {editingId ? 'Update service details and bullet points' : 'Fill in the details to create a new service entry'}
+                  </p>
+                </div>
+                <button onClick={resetModal} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
+
+              <div className="space-y-6 relative z-10">
+                {/* Title + Category */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2">Service Title *</label>
+                    <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all" placeholder="e.g. Web and Mobile Development" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2">Category *</label>
+                    <input 
+                      list="svc-categories"
+                      type="text" 
+                      value={newCategory} 
+                      onChange={(e) => setNewCategory(e.target.value)} 
+                      className="w-full h-12 bg-white/5 border border-white/5 rounded-xl px-4 outline-none text-white text-sm focus:border-primary/50 transition-all" 
+                      placeholder="e.g. Technical" 
+                    />
+                    <datalist id="svc-categories">
+                      {existingCategories.map(cat => <option key={cat} value={cat} />)}
+                    </datalist>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-2">Service Description</label>
+                  <textarea 
+                    rows={3} 
+                    value={newDescription} 
+                    onChange={(e) => setNewDescription(e.target.value)} 
+                    className="w-full bg-white/5 border border-white/5 rounded-xl p-4 outline-none text-white text-sm focus:border-primary/50 transition-all resize-none" 
+                    placeholder="Describe what this service offers. e.g. 'We craft responsive, user-friendly websites using React, Next.js, and modern frameworks that drive engagement.'" 
+                  />
+                </div>
+
+                {/* Service Cards (Bullet Points) */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between pl-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Bullet Points / Highlights</label>
+                    <button onClick={handleAddCard} className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest flex items-center">
+                      <Plus className="w-3 h-3 mr-1" /> Add Point
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {newServiceCards.map((card, idx) => (
+                      <div key={idx} className="flex gap-2 items-start">
+                        <div className="flex-1 grid grid-cols-2 gap-2">
+                          <input 
+                            type="text" 
+                            value={card.title}
+                            onChange={(e) => {
+                              const arr = [...newServiceCards];
+                              arr[idx].title = e.target.value;
+                              setNewServiceCards(arr);
+                            }}
+                            className="h-10 bg-white/5 border border-white/5 rounded-xl px-3 outline-none text-white text-xs focus:border-primary/50 transition-all" 
+                            placeholder={`Point title (e.g. React.js)`}
+                          />
+                          <input 
+                            type="text"
+                            value={card.description}
+                            onChange={(e) => {
+                              const arr = [...newServiceCards];
+                              arr[idx].description = e.target.value;
+                              setNewServiceCards(arr);
+                            }}
+                            className="h-10 bg-white/5 border border-white/5 rounded-xl px-3 outline-none text-white text-xs focus:border-primary/50 transition-all" 
+                            placeholder={`Short description (optional)`}
+                          />
+                        </div>
+                        {newServiceCards.length > 1 && (
+                          <button onClick={() => handleRemoveCard(idx)} className="p-2 hover:bg-red-500/10 hover:text-red-400 text-slate-600 rounded-lg transition-colors mt-0.5">
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-white/5 flex gap-4">
+                  <button onClick={resetModal} className="flex-1 h-12 bg-white/5 text-slate-400 font-bold rounded-xl text-sm hover:text-white transition-colors">Cancel</button>
+                  <button 
+                    onClick={handleSubmit}
+                    disabled={createMutation.isPending || updateMutation.isPending || !newTitle || !newCategory}
+                    className="flex-1 h-12 bg-primary text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {createMutation.isPending || updateMutation.isPending ? 'Saving...' : (editingId ? 'Save Changes' : 'Create Service')}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
