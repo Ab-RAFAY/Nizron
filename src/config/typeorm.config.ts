@@ -11,7 +11,18 @@ export const getTypeOrmConfig = (
   const config: TypeOrmModuleOptions = {
     type: 'postgres',
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: true, // Temporarily enabled to sync new 'description' column — will disable after migration
+    /**
+     * DATABASE SYNC STRATEGY:
+     * - In Development: synchronize: true (Automatically updates DB columns)
+     * - In Production: synchronize: false (Protects live data)
+     * 
+     * HOW TO UPDATE DATABASE IN FUTURE:
+     * 1. Add your new field in the .entity.ts file.
+     * 2. Temporarily change the line below to 'synchronize: true'.
+     * 3. Push to GitHub and wait for Vercel to deploy once.
+     * 4. Change it back to 'synchronize: !isProduction' immediately after.
+     */
+    synchronize: !isProduction, 
     logging: !isProduction,
     ssl: {
       rejectUnauthorized: false, // Essential for Neon and similar serverless Postgres
