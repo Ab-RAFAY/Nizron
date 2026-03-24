@@ -11,8 +11,8 @@ export const getTypeOrmConfig = (
   const config: TypeOrmModuleOptions = {
     type: 'postgres',
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: !isProduction, // Disable in production
-    logging: !isProduction, // Disable in production
+    synchronize: true, // Temporarily enabled to sync new 'description' column — will disable after migration
+    logging: !isProduction,
     ssl: {
       rejectUnauthorized: false, // Essential for Neon and similar serverless Postgres
     },
