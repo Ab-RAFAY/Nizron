@@ -92,7 +92,7 @@ export default function ServicesAdmin() {
     const payload = {
       title: newTitle.trim(),
       category: newCategory.trim(),
-      description: newDescription.trim(),
+      description: newDescription ? newDescription.trim() : "",
       serviceCards: newServiceCards.filter(c => c.title.trim() !== ''),
     };
 
