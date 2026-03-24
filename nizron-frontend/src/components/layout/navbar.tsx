@@ -2,75 +2,83 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronRight } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const navLinks = [
-  { name: 'Home', href: '/' },
   { name: 'Services', href: '/services' },
   { name: 'Products', href: '/products' },
-  { name: 'Our Team', href: '/team' },
+  { name: 'Team', href: '/team' },
   { name: 'FAQ', href: '/faq' },
 ];
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'py-4 bg-[#050505]/60 backdrop-blur-2xl border-b border-white/10 shadow-2xl shadow-black/50' : 'py-8 bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'py-3 bg-[#080a0f]/80 backdrop-blur-xl border-b border-white/[0.07] shadow-lg shadow-black/30' 
+          : 'py-4 bg-transparent'
       }`}
     >
-      <div className="container mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-3 group">
-          <motion.div 
-            whileHover={{ rotate: 10, scale: 1.1 }}
-            className="w-12 h-12 bg-vibrant rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/30 relative overflow-hidden group/logo"
-          >
-            <div className="absolute inset-0 liquid-gradient opacity-0 group-hover/logo:opacity-100 transition-opacity" />
-            <span className="text-white font-black text-2xl relative z-10">N</span>
-          </motion.div>
-          <span className="text-3xl font-header font-black tracking-tighter text-white uppercase italic group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-vibrant transition-all duration-500">
-            Nizron
+      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 bg-vibrant rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20 flex-shrink-0">
+            <span className="text-white font-black text-sm">N</span>
+          </div>
+          <span className="text-[15px] font-semibold tracking-tight text-white/90 group-hover:text-white transition-colors">
+            NIZRON
           </span>
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center space-x-10">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-sm font-semibold text-slate-400 hover:text-white hover:scale-105 transition-all duration-300 relative group"
-            >
-              {link.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-vibrant group-hover:w-full transition-all duration-300"></span>
-            </Link>
-          ))}
+        <div className="hidden md:flex items-center gap-1">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`px-3.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 ${
+                  isActive 
+                    ? 'text-white bg-white/[0.08]' 
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+                }`}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Desktop CTA */}
+        <div className="hidden md:flex items-center gap-3">
           <Link
             href="/admin/login"
-            className="px-7 py-3 bg-vibrant text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[13px] font-semibold shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 transition-all duration-200"
           >
-            Admin Portal <ChevronRight className="ml-1 w-4 h-4" />
+            Admin Portal →
           </Link>
         </div>
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden text-white p-2 hover:bg-white/5 rounded-xl transition-colors"
+          className="md:hidden text-slate-400 hover:text-white p-1.5 hover:bg-white/5 rounded-lg transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? <X /> : <Menu />}
+          {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
         </button>
       </div>
 
@@ -78,28 +86,30 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="absolute top-full left-4 right-4 mt-2 bg-[#0D0D0D]/95 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-2xl md:hidden overflow-hidden"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-3 right-3 mt-1 bg-[#0e1018] border border-white/[0.08] rounded-xl shadow-2xl md:hidden overflow-hidden"
           >
-            <div className="flex flex-col p-8 space-y-6">
+            <div className="flex flex-col p-2 gap-0.5">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-xl font-bold text-white hover:text-indigo-400 transition-colors"
+                  className="px-4 py-3 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.name}
                 </Link>
               ))}
+              <div className="border-t border-white/[0.07] my-1" />
               <Link
                 href="/admin/login"
-                className="w-full py-4 bg-vibrant text-white rounded-2xl text-center font-bold shadow-lg shadow-indigo-500/20"
+                className="px-4 py-3 text-sm font-semibold text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 rounded-lg transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Admin Portal
+                Admin Portal →
               </Link>
             </div>
           </motion.div>

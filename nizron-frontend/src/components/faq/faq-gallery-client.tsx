@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FAQ } from '@/types/product';
-import { Search, ChevronDown, MessageCircleQuestion, Layers } from 'lucide-react';
+import { Search, ChevronDown, MessageCircleQuestion } from 'lucide-react';
 
 interface FAQGalleryClientProps {
   initialFaqs: FAQ[];
@@ -30,9 +30,7 @@ export default function FAQGalleryClient({ initialFaqs: faqs }: FAQGalleryClient
   );
 
   const groupedFaqs = filteredFaqs.reduce((acc, faq) => {
-    if (!acc[faq.category]) {
-      acc[faq.category] = [];
-    }
+    if (!acc[faq.category]) acc[faq.category] = [];
     acc[faq.category].push(faq);
     return acc;
   }, {} as Record<string, FAQ[]>);
@@ -41,115 +39,98 @@ export default function FAQGalleryClient({ initialFaqs: faqs }: FAQGalleryClient
 
   return (
     <>
-      <div className="text-center space-y-10 mb-20">
-         <motion.div
-           initial={{ opacity: 0, scale: 0.9 }}
-           animate={{ opacity: 1, scale: 1 }}
-           className="inline-flex items-center space-x-3 px-4 py-1.5 bg-white/[0.03] backdrop-blur-md border border-white/10 text-slate-400 rounded-full text-xs font-bold uppercase tracking-[0.3em] mx-auto shadow-2xl"
-         >
-           <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-           <span>Neural Knowledge Matrix</span>
-         </motion.div>
-         <motion.h1 
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ delay: 0.1 }}
-           className="text-6xl md:text-8xl font-header font-bold text-white tracking-tighter leading-none"
-         >
-           Interface <span className="text-gradient italic">Support.</span>
-         </motion.h1>
+      {/* Page Header */}
+      <div className="mb-8">
+        <div className="badge mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />
+          FAQ
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-header font-bold text-white tracking-tight mb-3">
+              Frequently asked <span className="text-gradient">questions.</span>
+            </h1>
+            <p className="text-sm text-slate-400 max-w-xl leading-relaxed">
+              Answers to the most common questions about our services, process, and delivery.
+            </p>
+          </div>
 
-         <motion.div 
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ delay: 0.2 }}
-           className="max-w-3xl mx-auto relative group pt-8"
-         >
-           <div className="absolute inset-y-0 mt-8 left-6 flex items-center pointer-events-none">
-             <Search className="w-7 h-7 text-slate-500 group-focus-within:text-white transition-all duration-300" />
-           </div>
-           <input
-             type="text"
-             placeholder="Search neural blueprints, cloud logic, or technical support..."
-             className="w-full h-20 bg-white/[0.03] border border-white/10 rounded-2xl pl-16 pr-6 outline-none text-white text-xl focus:border-indigo-500 focus:shadow-[0_0_40px_rgba(99,102,241,0.2)] transition-all font-medium backdrop-blur-3xl placeholder:text-slate-600"
-             value={searchQuery}
-             onChange={(e) => setSearchQuery(e.target.value)}
-           />
-           <div className="absolute top-1/2 -translate-y-1/2 right-6 pt-8 opacity-0 group-focus-within:opacity-100 transition-opacity">
-              <div className="px-3 py-1 bg-white/5 border border-white/10 text-[10px] font-bold text-slate-400 rounded-md">NEURAL QUERY ACTIVE</div>
-           </div>
-         </motion.div>
+          {/* Search */}
+          <div className="relative flex-shrink-0 sm:w-64">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search questions..."
+              className="w-full h-9 bg-white/[0.04] border border-white/[0.08] rounded-lg pl-9 pr-4 outline-none text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="relative min-h-[400px]">
+      {/* Content */}
+      <div className="relative min-h-[200px]">
         {categories.length > 0 ? (
-           <div className="space-y-20">
-             {categories.map((category, catIdx) => (
-                <motion.div
-                  key={category}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: catIdx * 0.1 }}
-                  className="space-y-10"
-                >
-                   <h2 className="flex items-center text-3xl font-header font-bold text-white border-b border-white/5 pb-10 group cursor-default">
-                      <div className="p-4 bg-white/[0.03] border border-white/5 rounded-2xl mr-6 group-hover:bg-vibrant group-hover:text-white group-hover:border-transparent transition-all duration-300">
-                         <Layers className="w-8 h-8 text-indigo-400" />
+          <div className="space-y-10">
+            {categories.map((category, catIdx) => (
+              <motion.div
+                key={category}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: catIdx * 0.08 }}
+              >
+                <h2 className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 mb-3 pb-3 border-b border-white/[0.07]">
+                  {category}
+                </h2>
+                <div className="space-y-2">
+                  {groupedFaqs[category].map((faq) => {
+                    const isOpen = openIds.has(faq.id);
+                    return (
+                      <div 
+                        key={faq.id} 
+                        className={`card rounded-lg overflow-hidden transition-all duration-200 ${isOpen ? 'border-indigo-500/30 bg-indigo-600/[0.04]' : 'hover:border-white/[0.12]'}`}
+                      >
+                        <button
+                          onClick={() => toggleAccordion(faq.id)}
+                          className="w-full px-5 py-4 flex items-center justify-between text-left gap-4"
+                        >
+                          <span className={`text-sm font-medium transition-colors duration-200 ${isOpen ? 'text-white' : 'text-slate-300'}`}>
+                            {faq.questionTitle}
+                          </span>
+                          <ChevronDown 
+                            size={15} 
+                            className={`text-slate-500 flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-indigo-400' : ''}`} 
+                          />
+                        </button>
+                        <AnimatePresence>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            >
+                              <div className="px-5 pb-4 border-t border-white/[0.06]">
+                                <p className="text-sm text-slate-400 leading-relaxed pt-3">
+                                  {faq.answer}
+                                </p>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
-                      {category}
-                   </h2>
-                   <div className="space-y-6">
-                     {groupedFaqs[category].map((faq) => {
-                        const isOpen = openIds.has(faq.id);
-                        return (
-                          <div 
-                            key={faq.id} 
-                            className={`bg-white/[0.03] border transition-all duration-500 rounded-[2rem] overflow-hidden backdrop-blur-2xl ${isOpen ? 'border-indigo-500 shadow-2xl shadow-indigo-600/10' : 'border-white/10 shadow-black/20 hover:border-white/20'}`}
-                          >
-                             <button
-                               onClick={() => toggleAccordion(faq.id)}
-                               className="w-full px-10 py-8 flex items-center justify-between text-left focus:outline-none group"
-                             >
-                               <span className={`text-xl font-bold transition-all duration-300 pr-8 ${isOpen ? 'text-white' : 'text-slate-400 group-hover:text-white'}`}>
-                                  {faq.questionTitle}
-                               </span>
-                               <div className={`p-3 rounded-xl transition-all duration-500 ${isOpen ? 'bg-white text-[#050505] rotate-180' : 'bg-white/5 border border-white/5 text-slate-500 group-hover:bg-white/10 group-hover:text-white group-hover:border-white/10'}`}>
-                                  <ChevronDown className="w-6 h-6" />
-                               </div>
-                             </button>
-                             <AnimatePresence>
-                               {isOpen && (
-                                 <motion.div
-                                   initial={{ height: 0, opacity: 0 }}
-                                   animate={{ height: 'auto', opacity: 1 }}
-                                   exit={{ height: 0, opacity: 0 }}
-                                   transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                                 >
-                                   <div className="px-10 pb-10 pt-4 border-t border-white/5">
-                                     <p className="text-lg text-slate-400 leading-relaxed font-medium">
-                                        {faq.answer}
-                                     </p>
-                                   </div>
-                                 </motion.div>
-                               )}
-                             </AnimatePresence>
-                          </div>
-                        )
-                     })}
-                   </div>
-                </motion.div>
-              ))}
-           </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         ) : (
-          <div className="text-center py-32 bg-white/[0.02] backdrop-blur-3xl rounded-[3.5rem] border border-dashed border-white/10 shadow-2xl max-w-4xl mx-auto">
-            <div className="w-24 h-24 bg-white/[0.03] rounded-full flex items-center justify-center mx-auto mb-10 shadow-2xl border border-white/5">
-              <MessageCircleQuestion className="w-10 h-10 text-slate-700" />
-            </div>
-            <h3 className="text-3xl font-bold text-white mb-4 tracking-tighter">Query Results Null</h3>
-            <p className="text-slate-500 text-lg max-w-md mx-auto font-medium">
-              We couldn't retrieve any logic entries matching your neural parameters. Adjust your interface search.
-            </p>
+          <div className="text-center py-16 card rounded-xl">
+            <MessageCircleQuestion className="w-8 h-8 text-slate-600 mx-auto mb-3" />
+            <p className="text-sm font-semibold text-slate-500">No results found for your search.</p>
           </div>
         )}
       </div>
