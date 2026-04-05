@@ -29,7 +29,7 @@ export default function TeamGalleryClient({ team }: TeamGalleryClientProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.06, duration: 0.4 }}
-            className="card rounded-xl p-5 hover:border-white/[0.12] hover:bg-[#111420] transition-all duration-200 group"
+            className="card rounded-xl p-5 hover:border-white/12 hover:bg-[#111420] transition-all duration-200 group"
           >
             {/* Header */}
             <div className="flex items-center gap-3 mb-4">
@@ -37,10 +37,10 @@ export default function TeamGalleryClient({ team }: TeamGalleryClientProps) {
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="w-10 h-10 rounded-lg object-cover border border-white/[0.08] flex-shrink-0"
+                  className="w-10 h-10 rounded-lg object-cover border border-white/8 shrink-0"
                 />
               ) : (
-                <div className="w-10 h-10 bg-indigo-600/20 border border-indigo-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-indigo-600/20 border border-indigo-500/20 rounded-lg flex items-center justify-center shrink-0">
                   <span className="text-sm font-bold text-indigo-400">{member.name[0]}</span>
                 </div>
               )}
@@ -52,13 +52,13 @@ export default function TeamGalleryClient({ team }: TeamGalleryClientProps) {
 
             {/* Skills */}
             {member.skillSet.length > 0 && (
-              <div className="border-t border-white/[0.06] pt-3">
+              <div className="border-t border-white/6 pt-3">
                 <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mb-2">Skills</p>
                 <div className="flex flex-wrap gap-1.5">
                   {member.skillSet.map((skill, skillIdx) => (
                     <span
                       key={skillIdx}
-                      className="px-2 py-0.5 text-[11px] font-medium text-slate-400 bg-white/[0.04] border border-white/[0.06] rounded-md"
+                      className="px-2 py-0.5 text-[11px] font-medium text-slate-400 bg-white/4 border border-white/6 rounded-md"
                     >
                       {skill}
                     </span>

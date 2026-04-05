@@ -45,7 +45,7 @@ export default function ProductGalleryClient({ initialProducts: products }: Prod
       {/* Page Header */}
       <div className="mb-8">
         <div className="badge mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-violet-400 flex-shrink-0" />
+          <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />
           Products
         </div>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -59,12 +59,12 @@ export default function ProductGalleryClient({ initialProducts: products }: Prod
           </div>
 
           {/* Search */}
-          <div className="relative flex-shrink-0 sm:w-64">
+          <div className="relative shrink-0 sm:w-64">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full h-9 bg-white/[0.04] border border-white/[0.08] rounded-lg pl-9 pr-4 outline-none text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 transition-all"
+              className="w-full h-9 bg-white/4 border border-white/8 rounded-lg pl-9 pr-4 outline-none text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -97,7 +97,7 @@ export default function ProductGalleryClient({ initialProducts: products }: Prod
           <button
             onClick={handleClearCategory}
             className={`px-3 h-8 rounded-lg text-[12px] font-semibold transition-all duration-200 ${
-              !selectedCategory ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-white/[0.04] border border-white/[0.07] hover:text-white hover:bg-white/[0.08]'
+              !selectedCategory ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-white/4 border border-white/7 hover:text-white hover:bg-white/8'
             }`}
           >
             All
@@ -109,7 +109,7 @@ export default function ProductGalleryClient({ initialProducts: products }: Prod
               className={`px-3 h-8 rounded-lg text-[12px] font-semibold transition-all duration-200 ${
                 selectedCategory?.toLowerCase() === cat.toLowerCase() 
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
-                  : 'text-slate-400 bg-white/[0.04] border border-white/[0.07] hover:text-white hover:bg-white/[0.08]'
+                  : 'text-slate-400 bg-white/4 border border-white/7 hover:text-white hover:bg-white/8'
               }`}
             >
               {cat}

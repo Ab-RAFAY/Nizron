@@ -166,7 +166,7 @@ export default function ProductsAdmin() {
       </div>
 
       {/* Actions & Filters */}
-      <div className="bg-white/5 border border-white/5 rounded-[2rem] p-4 flex flex-col md:flex-row md:items-center gap-4">
+      <div className="bg-white/5 border border-white/5 rounded-4xl p-4 flex flex-col md:flex-row md:items-center gap-4">
         <div className="relative flex-1 group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-primary transition-colors" />
           <input
@@ -180,7 +180,7 @@ export default function ProductsAdmin() {
       </div>
 
       {/* CRUD Table */}
-      <div className="bg-white/5 border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
+      <div className="bg-white/5 border border-white/5 rounded-4xl overflow-hidden shadow-2xl">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-white/5 border-b border-white/5 text-slate-500 text-[10px] font-bold uppercase tracking-widest">
@@ -278,7 +278,7 @@ export default function ProductsAdmin() {
 
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-y-auto">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-6 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

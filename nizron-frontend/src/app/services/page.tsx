@@ -54,7 +54,7 @@ export default async function ServicesHub() {
               "Nizron delivered a high-performance platform ahead of schedule. Their technical depth and professionalism set them apart from any other engineering partner we've worked with."
             </p>
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-indigo-600/30 border border-indigo-500/30 rounded-lg flex-shrink-0" />
+              <div className="w-9 h-9 bg-indigo-600/30 border border-indigo-500/30 rounded-lg shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-white">Chief Technology Officer</p>
                 <p className="text-[11px] text-slate-500">Global Logistics Partner</p>

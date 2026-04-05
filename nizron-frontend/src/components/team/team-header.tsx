@@ -7,7 +7,7 @@ export default function TeamHeader() {
   return (
     <div className="mb-12">
       <div className="badge mb-4">
-        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0" />
+        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
         Our Team
       </div>
       <h1 className="text-3xl md:text-4xl font-header font-bold text-white tracking-tight mb-3">

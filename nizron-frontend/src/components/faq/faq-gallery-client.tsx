@@ -42,7 +42,7 @@ export default function FAQGalleryClient({ initialFaqs: faqs }: FAQGalleryClient
       {/* Page Header */}
       <div className="mb-8">
         <div className="badge mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0" />
+          <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" />
           FAQ
         </div>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -56,12 +56,12 @@ export default function FAQGalleryClient({ initialFaqs: faqs }: FAQGalleryClient
           </div>
 
           {/* Search */}
-          <div className="relative flex-shrink-0 sm:w-64">
+          <div className="relative shrink-0 sm:w-64">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               type="text"
               placeholder="Search questions..."
-              className="w-full h-9 bg-white/[0.04] border border-white/[0.08] rounded-lg pl-9 pr-4 outline-none text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 transition-all"
+              className="w-full h-9 bg-white/4 border border-white/8 rounded-lg pl-9 pr-4 outline-none text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -90,7 +90,7 @@ export default function FAQGalleryClient({ initialFaqs: faqs }: FAQGalleryClient
                     return (
                       <div 
                         key={faq.id} 
-                        className={`card rounded-lg overflow-hidden transition-all duration-200 ${isOpen ? 'border-indigo-500/30 bg-indigo-600/[0.04]' : 'hover:border-white/[0.12]'}`}
+                        className={`card rounded-lg overflow-hidden transition-all duration-200 ${isOpen ? 'border-indigo-500/30 bg-indigo-600/4' : 'hover:border-white/12'}`}
                       >
                         <button
                           onClick={() => toggleAccordion(faq.id)}
@@ -101,7 +101,7 @@ export default function FAQGalleryClient({ initialFaqs: faqs }: FAQGalleryClient
                           </span>
                           <ChevronDown 
                             size={15} 
-                            className={`text-slate-500 flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-indigo-400' : ''}`} 
+                            className={`text-slate-500 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-indigo-400' : ''}`} 
                           />
                         </button>
                         <AnimatePresence>
@@ -112,7 +112,7 @@ export default function FAQGalleryClient({ initialFaqs: faqs }: FAQGalleryClient
                               exit={{ height: 0, opacity: 0 }}
                               transition={{ duration: 0.25, ease: 'easeInOut' }}
                             >
-                              <div className="px-5 pb-4 border-t border-white/[0.06]">
+                              <div className="px-5 pb-4 border-t border-white/6">
                                 <p className="text-sm text-slate-400 leading-relaxed pt-3">
                                   {faq.answer}
                                 </p>

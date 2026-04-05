@@ -27,7 +27,7 @@ export default function QuickView({ product, isOpen, onClose }: QuickViewProps) 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-12 overflow-y-auto">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6 sm:p-12 overflow-y-auto">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -45,7 +45,7 @@ export default function QuickView({ product, isOpen, onClose }: QuickViewProps) 
             className="w-full max-w-6xl bg-[#0D0D0D]/95 backdrop-blur-3xl border border-white/10 rounded-[3.5rem] relative z-10 overflow-hidden shadow-2xl flex flex-col lg:flex-row my-auto border-t-white/10 shadow-black/80"
           >
             {/* Left Section: Visual / Title */}
-            <div className="lg:w-2/5 p-16 bg-white/[0.02] relative flex flex-col justify-end space-y-10 h-[450px] lg:h-auto border-r border-white/5">
+            <div className="lg:w-2/5 p-16 bg-white/2 relative flex flex-col justify-end space-y-10 h-[450px] lg:h-auto border-r border-white/5">
               <div className="absolute top-0 right-0 p-40 bg-indigo-600/10 blur-[130px] pointer-events-none" />
               <div className="absolute bottom-0 left-0 p-32 bg-purple-600/10 blur-[130px] pointer-events-none" />
               
@@ -58,14 +58,14 @@ export default function QuickView({ product, isOpen, onClose }: QuickViewProps) 
                    <Package className="w-12 h-12 text-white" />
                 </motion.div>
                 <div className="space-y-4">
-                  <h2 className="text-6xl font-header font-bold text-white tracking-tighter leading-[1] italic">
+                  <h2 className="text-6xl font-header font-bold text-white tracking-tighter leading-none italic">
                     {product.name}
                   </h2>
                   <div className="flex flex-wrap gap-3 pt-6">
-                     <div className="px-5 py-2 bg-white/[0.03] border border-white/5 text-[10px] uppercase font-bold text-slate-400 rounded-full flex items-center tracking-[0.2em] shadow-2xl">
+                     <div className="px-5 py-2 bg-white/3 border border-white/5 text-[10px] uppercase font-bold text-slate-400 rounded-full flex items-center tracking-[0.2em] shadow-2xl">
                         <ShieldCheck className="w-4 h-4 mr-2.5 text-indigo-400" /> Neural Tier
                      </div>
-                     <div className="px-5 py-2 bg-white/[0.03] border border-white/5 text-[10px] uppercase font-bold text-slate-400 rounded-full flex items-center tracking-[0.2em] shadow-2xl">
+                     <div className="px-5 py-2 bg-white/3 border border-white/5 text-[10px] uppercase font-bold text-slate-400 rounded-full flex items-center tracking-[0.2em] shadow-2xl">
                         <Database className="w-4 h-4 mr-2.5 text-purple-400" /> Deep Matrix
                      </div>
                   </div>
@@ -110,8 +110,8 @@ export default function QuickView({ product, isOpen, onClose }: QuickViewProps) 
                      </h3>
                      <div className="grid grid-cols-1 gap-6">
                         {product.features.map((feature, idx) => (
-                          <div key={idx} className="flex items-start p-6 bg-white/[0.02] border border-white/5 rounded-[2rem] group/feat hover:bg-white/[0.05] hover:border-white/10 transition-all shadow-2xl shadow-black/20">
-                             <div className="w-2.5 h-2.5 bg-vibrant rounded-full mt-2 flex-shrink-0 group-hover:scale-125 transition-transform" />
+                          <div key={idx} className="flex items-start p-6 bg-white/2 border border-white/5 rounded-4xl group/feat hover:bg-white/5 hover:border-white/10 transition-all shadow-2xl shadow-black/20">
+                             <div className="w-2.5 h-2.5 bg-vibrant rounded-full mt-2 shrink-0 group-hover:scale-125 transition-transform" />
                              <span className="text-base text-slate-400 font-bold ml-5 group-hover:text-white transition-colors tracking-tight">{feature}</span>
                           </div>
                         ))}
@@ -131,7 +131,7 @@ export default function QuickView({ product, isOpen, onClose }: QuickViewProps) 
                               </div>
                            ))
                         ) : (
-                           <div className="p-10 bg-white/[0.02] rounded-[2.5rem] border border-dashed border-white/10 text-center shadow-inner">
+                           <div className="p-10 bg-white/2 rounded-[2.5rem] border border-dashed border-white/10 text-center shadow-inner">
                               <p className="text-xs text-slate-600 font-bold uppercase tracking-widest italic">No registry entries available.</p>
                            </div>
                         )}
@@ -146,7 +146,7 @@ export default function QuickView({ product, isOpen, onClose }: QuickViewProps) 
                         <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-600">Nizron Framework</span>
                         <span className="text-[11px] font-bold text-white tracking-widest">STABLE COMPLIANCE X-28</span>
                      </div>
-                     <div className="p-4 bg-white/[0.03] border border-white/10 rounded-2xl shadow-2xl">
+                     <div className="p-4 bg-white/3 border border-white/10 rounded-2xl shadow-2xl">
                         <Cloud className="w-7 h-7 text-slate-400" />
                      </div>
                   </div>

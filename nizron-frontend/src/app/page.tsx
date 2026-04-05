@@ -2,14 +2,33 @@ import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import Hero from "@/components/home/hero";
 import ImpactStats from "@/components/home/impact-stats";
+import FeaturedProducts from "@/components/home/featured-products";
 import Link from "next/link";
 
-export default function Home() {
+export const revalidate = 60;
+
+async function getProductData() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+  try {
+    const res = await fetch(`${apiUrl}/products`, { next: { revalidate: 60 } });
+    if (!res.ok) return { data: [] };
+    return res.json();
+  } catch {
+    return { data: [] };
+  }
+}
+
+export default async function Home() {
+  const productRes = await getProductData();
+  const products = productRes?.data || [];
+
   return (
     <main className="flex flex-col min-h-screen bg-[#080a0f] overflow-x-hidden">
       <Navbar />
       <Hero />
       <ImpactStats />
+      
+      <FeaturedProducts products={products} />
 
       {/* CTA Section */}
       <section className="border-t border-white/[0.07] bg-[#0a0c12]">

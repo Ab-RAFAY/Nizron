@@ -65,7 +65,7 @@ export default function AdminLogin() {
           <span className="text-xs font-bold uppercase tracking-widest">Back to Public Site</span>
         </Link>
 
-        <div className="bg-white/5 border border-white/10 backdrop-blur-2xl rounded-[2rem] p-10 shadow-2xl overflow-hidden relative group">
+        <div className="bg-white/5 border border-white/10 backdrop-blur-2xl rounded-4xl p-10 shadow-2xl overflow-hidden relative group">
           <div className="absolute top-0 right-0 w-24 h-24 bg-primary/20 blur-2xl group-hover:bg-primary/30 transition-all pointer-events-none" />
           
           <div className="text-center space-y-3 mb-10">

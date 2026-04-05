@@ -70,7 +70,7 @@ export default function OverviewAdmin() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="p-8 bg-white/5 border border-white/5 rounded-[2rem] relative group overflow-hidden"
+            className="p-8 bg-white/5 border border-white/5 rounded-4xl relative group overflow-hidden"
           >
             <div className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity`}>
               <stat.icon className="w-20 h-20" />

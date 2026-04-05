@@ -56,7 +56,7 @@ export default function AdminSidebar() {
               href={item.href}
               className={`flex items-center justify-between p-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all group ${isActive
                 ? 'bg-vibrant text-white shadow-2xl shadow-indigo-600/30 border border-white/20'
-                : 'text-slate-500 hover:text-white hover:bg-white/[0.03] border border-transparent hover:border-white/5'
+                : 'text-slate-500 hover:text-white hover:bg-white/3 border border-transparent hover:border-white/5'
                 }`}
             >
               <div className="flex items-center">

@@ -26,7 +26,7 @@ export default function ProductCard({ product, onQuickView, index }: ProductCard
         scale: 1.02,
         transition: { type: "spring", stiffness: 400, damping: 10 }
       }}
-      className={`group relative ${aspectRatio} bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden flex flex-col justify-end p-10 cursor-pointer transition-all duration-500 shadow-2xl shadow-black/50 hover:border-white/20`}
+      className={`group relative ${aspectRatio} bg-white/3 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden flex flex-col justify-end p-10 cursor-pointer transition-all duration-500 shadow-2xl shadow-black/50 hover:border-white/20`}
       onClick={() => onQuickView(product)}
     >
       {/* Product Image / Background */}
@@ -38,11 +38,11 @@ export default function ProductCard({ product, onQuickView, index }: ProductCard
             className="w-full h-full object-cover opacity-20 group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" 
           />
         ) : (
-          <div className="w-full h-full bg-white/[0.02] flex items-center justify-center opacity-40">
+          <div className="w-full h-full bg-white/2 flex items-center justify-center opacity-40">
             <Eye className="w-12 h-12 text-slate-700" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent group-hover:via-[#050505]/40 transition-all duration-500" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#050505] via-[#050505]/60 to-transparent group-hover:via-[#050505]/40 transition-all duration-500" />
       </div>
 
       {/* Content */}

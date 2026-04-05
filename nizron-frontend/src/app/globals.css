@@ -1,19 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #080a0f;
-  --foreground: #e4e8f0;
-  --primary: #6366F1;
+  --background: #000000;
+  --foreground: #FFFFFF;
+  --primary: #00E599;
   --primary-purple: #8B5CF6;
-  --primary-cyan: #3B82F6;
-  --primary-glow: rgba(99, 102, 241, 0.12);
-  --slate-grey: #94A3B8;
-  --card-bg: rgba(13, 15, 20, 0.8);
-  --card-border: rgba(255, 255, 255, 0.06);
-  --success: #10B981;
-  --surface: #0e1018;
-  --surface-2: #131620;
-  --border: rgba(255, 255, 255, 0.07);
+  --primary-cyan: #6366F1;
+  --primary-glow: rgba(0, 229, 153, 0.1);
+  --slate-grey: #A1A1AA;
+  --card-bg: #1A1A1A;
+  --card-border: #2E2E2E;
+  --success: #00E599;
+  --surface: #0D0D0D;
+  --surface-2: #1A1A1A;
+  --border: #2E2E2E;
+  --text-muted: #A1A1AA;
 }
 
 @theme inline {
@@ -30,6 +31,11 @@
   --color-success: var(--success);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-v: var(--border);
+  --color-accent-primary-v: var(--primary-cyan);
+  --color-accent-purple-v: var(--primary-purple);
+  --color-text-muted-v: var(--text-muted);
 
   --font-header: var(--font-outfit);
   --font-body: var(--font-inter);
@@ -72,6 +78,18 @@
     box-shadow: 0 0 24px rgba(99, 102, 241, 0.2);
   }
 
+  .btn-primary {
+    @apply px-5 py-2 bg-primary text-black font-bold rounded-md shadow-lg shadow-primary/10 hover:bg-primary/90 transition-all duration-200 flex items-center gap-2 text-sm;
+  }
+
+  .btn-secondary {
+    @apply px-5 py-2 bg-transparent border border-border text-[#A1A1AA] hover:text-white hover:bg-white/5 font-bold rounded-md transition-all duration-200 text-sm;
+  }
+
+  .card {
+    @apply bg-surface border border-border rounded-xl p-6 transition-all duration-300;
+  }
+
   .liquid-gradient {
     background: linear-gradient(-45deg, #6366f1, #8b5cf6, #3b82f6, #6366f1);
     background-size: 400% 400%;
@@ -93,7 +111,14 @@
 
   /* Badge */
   .badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider border border-white/10 bg-white/[0.03] text-slate-400;
+    @apply inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[11px] font-bold uppercase tracking-widest text-white;
+  }
+
+  .grid-pattern {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 }
 
