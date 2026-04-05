@@ -2,20 +2,20 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Linkedin, Twitter, Github } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Twitter, Github, Cpu, Shield, Globe } from 'lucide-react';
 
 const footerLinks = {
-  Services: [
+  Infrastructure: [
     { label: 'Software Engineering', href: '/services' },
     { label: 'Cloud Architecture', href: '/services' },
-    { label: 'Security & Defense', href: '/services' },
-    { label: 'Mobile Development', href: '/services' },
+    { label: 'Security & Analytics', href: '/services' },
+    { label: 'Mobile Deployment', href: '/services' },
   ],
-  Company: [
+  Resources: [
     { label: 'Our Team', href: '/team' },
-    { label: 'Products', href: '/products' },
-    { label: 'FAQ', href: '/faq' },
-    { label: 'Admin Portal', href: '/admin/login' },
+    { label: 'Product Ecosystem', href: '/products' },
+    { label: 'Knowledge Base', href: '/faq' },
+    { label: 'Terminal Access', href: '/admin/login' },
   ],
 };
 
@@ -23,74 +23,86 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#080a0f] border-t border-white/[0.07] pt-14 pb-8">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Top grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-          {/* Brand */}
-          <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 bg-vibrant rounded-md flex items-center justify-center">
-                <span className="text-white font-bold text-xs">N</span>
+    <footer className="relative pt-12 pb-12 border-none">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-8">
+
+          {/* Brand & Mission */}
+          <div className="md:col-span-5 space-y-8">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-9 h-9 bg-vibrant rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <span className="text-white font-black text-sm">N</span>
               </div>
-              <span className="text-[13px] font-semibold tracking-tight text-white">NIZRON</span>
+              <span className="text-lg font-bold tracking-tighter text-white group-hover:text-indigo-400 transition-colors">NIZRON</span>
             </Link>
-            <p className="text-[13px] text-slate-500 leading-relaxed mb-5">
-              Professional IT solutions built for the modern enterprise.
+
+            <p className="text-[14px] text-slate-400 leading-relaxed max-w-sm">
+              Engineering the next generation of scalable digital infrastructure. We bridge the gap between complex software needs and elite technological execution.
             </p>
-            <div className="flex gap-2">
-              {[Linkedin, Twitter, Github].map((Icon, idx) => (
-                <a key={idx} href="#" className="p-2 bg-white/[0.04] border border-white/[0.07] hover:bg-white/[0.08] text-slate-500 hover:text-white rounded-lg transition-all duration-200">
-                  <Icon size={14} />
+
+            <div className="flex gap-3">
+              {[
+                { Icon: Linkedin, label: 'LinkedIn' },
+                { Icon: Twitter, label: 'Twitter' },
+                { Icon: Github, label: 'GitHub' }
+              ].map((social, idx) => (
+                <a
+                  key={idx}
+                  href="#"
+                  className="w-10 h-10 bg-white/[0.03] border border-white/[0.06] hover:border-indigo-500/40 hover:bg-indigo-500/10 text-slate-500 hover:text-white rounded-xl flex items-center justify-center transition-all duration-300 group"
+                  aria-label={social.label}
+                >
+                  <social.Icon size={16} className="group-hover:scale-110 transition-transform" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Links */}
-          {Object.entries(footerLinks).map(([heading, links]) => (
-            <div key={heading}>
-              <h4 className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 mb-4">{heading}</h4>
-              <ul className="space-y-2.5">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href} className="text-[13px] text-slate-400 hover:text-white transition-colors">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Links Sections */}
+          <div className="md:col-span-4 grid grid-cols-2 gap-8">
+            {Object.entries(footerLinks).map(([heading, links]) => (
+              <div key={heading}>
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-6">{heading}</h4>
+                <ul className="space-y-4">
+                  {links.map((link) => (
+                    <li key={link.label}>
+                      <Link href={link.href} className="text-[13px] text-slate-400 hover:text-white hover:translate-x-1 inline-block transition-all duration-200">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 mb-4">Contact</h4>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2.5">
-                <Mail size={13} className="text-slate-500 flex-shrink-0" />
-                <span className="text-[13px] text-slate-400 select-all">info@nizron.solutions</span>
+          {/* Contact & Status */}
+          <div className="md:col-span-3">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-6">HQ Terminal</h4>
+            <ul className="space-y-4 mb-8">
+              <li className="flex items-center gap-3 text-slate-400 hover:text-slate-200 transition-colors text-[13px]">
+                <Mail size={14} className="text-indigo-500/50" />
+                <span>ops@nizron.solutions</span>
               </li>
-              <li className="flex items-center gap-2.5">
-                <Phone size={13} className="text-slate-500 flex-shrink-0" />
-                <span className="text-[13px] text-slate-400">+1 (234) 567-890</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <MapPin size={13} className="text-slate-500 flex-shrink-0 mt-0.5" />
-                <span className="text-[13px] text-slate-400">123 Tech Avenue, Suite 400</span>
+              <li className="flex items-start gap-3 text-slate-400 hover:text-slate-200 transition-colors text-[13px]">
+                <MapPin size={14} className="text-indigo-500/50 mt-0.5" />
+                <span className="leading-relaxed">123 Tech Avenue, Suite 400<br />San Francisco, CA 94105</span>
               </li>
             </ul>
+
+            {/* System Status Indicator */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/5 border border-emerald-500/10 rounded-lg">
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-500/80">System Operational</span>
+            </div>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="pt-6 border-t border-white/[0.07] flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p className="text-[12px] text-slate-600">
-            © {currentYear} Nizron IT Solutions. All rights reserved.
-          </p>
-          <div className="flex gap-5">
-            <Link href="#" className="text-[12px] text-slate-600 hover:text-slate-400 transition-colors">Privacy Policy</Link>
-            <Link href="#" className="text-[12px] text-slate-600 hover:text-slate-400 transition-colors">Terms of Service</Link>
+        {/* Bottom Bar */}
+        <div className="pt-6 border-t border-white/[0.04] flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-6 text-[12px] text-slate-600">
+            <span>© Nizron IT Solutions</span>
           </div>
         </div>
       </div>

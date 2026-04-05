@@ -37,6 +37,29 @@
   --color-accent-purple-v: var(--primary-purple);
   --color-text-muted-v: var(--text-muted);
 
+  --animate-marquee: marquee 35s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 35s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    from {
+      transform: translateX(-50%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
   --font-header: var(--font-outfit);
   --font-body: var(--font-inter);
 }
@@ -115,17 +138,30 @@
   }
 
   .grid-pattern {
-    background-image: 
+    background-image:
       linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 40px 40px;
   }
+
+  .mask-radial-faded {
+    mask-image: radial-gradient(circle at center, black 10%, transparent 60%);
+    -webkit-mask-image: radial-gradient(circle at center, black 10%, transparent 60%);
+  }
 }
 
 @keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Refined Scrollbar */

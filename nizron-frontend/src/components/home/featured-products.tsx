@@ -17,7 +17,7 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
   if (displayedProducts.length === 0) return null;
 
   return (
-    <section className="py-24 bg-[#080a0f] relative overflow-hidden border-t border-white/[0.07]">
+    <section className="pt-12 pb-24 relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl max-h-[600px] pointer-events-none">
         <div className="absolute top-0 right-0 p-40 bg-primary/10 blur-[130px] rounded-full" />
@@ -63,7 +63,7 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
               <p className="text-slate-400 text-sm leading-relaxed mb-8 line-clamp-3">
                 {product.description}
               </p>
-              
+
               <div className="flex flex-wrap gap-2 mb-8">
                 {product.features.slice(0, 3).map((f, i) => (
                   <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[9px] font-bold text-slate-500 tracking-widest uppercase truncate max-w-[80px]">
@@ -84,20 +84,20 @@ export default function FeaturedProducts({ products }: FeaturedProductsProps) {
 
         {/* Floating Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-20">
-           {[
-             { label: 'Security Layer', icon: ShieldCheck, value: 'Advanced' },
-             { label: 'Latency', icon: Zap, value: '<10ms' },
-             { label: 'Architecture', icon: Database, value: 'Modular' },
-             { label: 'Status', icon: Package, value: 'Stable' },
-           ].map((item, idx) => (
-             <div key={idx} className="flex items-center gap-3 p-4 bg-white/2 border border-white/5 rounded-2xl">
-               <item.icon size={14} className="text-indigo-400 shadow-glow" />
-               <div className="flex flex-col">
-                 <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">{item.label}</span>
-                 <span className="text-xs font-bold text-slate-300">{item.value}</span>
-               </div>
-             </div>
-           ))}
+          {[
+            { label: 'Security Layer', icon: ShieldCheck, value: 'Advanced' },
+            { label: 'Latency', icon: Zap, value: '<10ms' },
+            { label: 'Architecture', icon: Database, value: 'Modular' },
+            { label: 'Status', icon: Package, value: 'Stable' },
+          ].map((item, idx) => (
+            <div key={idx} className="flex items-center gap-3 p-4 bg-white/2 border border-white/5 rounded-2xl">
+              <item.icon size={14} className="text-indigo-400 shadow-glow" />
+              <div className="flex flex-col">
+                <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">{item.label}</span>
+                <span className="text-xs font-bold text-slate-300">{item.value}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

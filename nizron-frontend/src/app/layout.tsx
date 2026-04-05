@@ -13,6 +13,8 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+import GlobalBackground from "@/components/home/global-background";
+
 export const metadata: Metadata = {
   title: "Nizron IT Solutions | Professional & Creative IT Services",
   description: "Next-generation IT solutions for modern businesses. Specializing in Web Development, Mobile Apps, and Enterprise ERP systems.",
@@ -28,7 +30,8 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${inter.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col font-body">
+      <body className="min-h-full flex flex-col font-body bg-[#080a0f] relative overflow-x-hidden">
+        <GlobalBackground />
         <Providers>
           {children}
         </Providers>
