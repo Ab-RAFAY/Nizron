@@ -13,7 +13,12 @@ const config = defineConfig({
   },
   plugins: [
     tailwindcss(),
-    tanstackStart(),
+    tanstackStart({
+      // @ts-ignore
+      server: {
+        preset: 'vercel',
+      },
+    }),
     viteReact(),
   ],
   server: {
