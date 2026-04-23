@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../../lib/api-client';
 import type { Service } from '../../types';
@@ -108,15 +108,15 @@ function ServicesAdmin() {
   const handleRemoveCard = (idx: number) => setNewServiceCards(newServiceCards.filter((_, i) => i !== idx));
 
   // Get unique existing categories for suggestion
-  const existingCategories = Array.from(new Set(services.map(s => s.category.trim())));
+  const existingCategories = Array.from(new Set(services.map((s: Service) => s.category.trim()))) as string[];
 
-  const filteredServices = services.filter(s => 
+  const filteredServices = services.filter((s: Service) => 
     s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     s.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalServices = services.length;
-  const categories = new Set(services.map(s => s.category.trim())).size;
+  const categories = new Set(services.map((s: Service) => s.category.trim())).size;
 
   return (
     <div className="space-y-8 max-w-[1240px] mx-auto">
@@ -201,7 +201,7 @@ function ServicesAdmin() {
                  </tr>
                ))
             ) : filteredServices.length > 0 ? (
-              filteredServices.map((service) => (
+              filteredServices.map((service: Service) => (
                 <tr key={service.id} className="hover:bg-white/5 transition-colors group">
                   <td className="px-8 py-5">
                     <div className="flex flex-col">
@@ -221,7 +221,7 @@ function ServicesAdmin() {
                   </td>
                   <td className="px-8 py-5">
                     <div className="flex gap-1">
-                      {service.technologies.slice(0, 3).map((t, idx) => (
+                      {service.technologies.slice(0, 3).map((t: any, idx: number) => (
                         <div key={idx} className="w-6 h-6 bg-slate-800 rounded-md border border-white/5 flex items-center justify-center text-[10px] font-bold text-slate-500">
                           {t.name ? t.name[0].toUpperCase() : 'T'}
                         </div>
@@ -312,7 +312,7 @@ function ServicesAdmin() {
                       placeholder="e.g. Technical" 
                     />
                     <datalist id="svc-categories">
-                      {existingCategories.map(cat => <option key={cat} value={cat} />)}
+                      {existingCategories.map((cat: string) => <option key={cat} value={cat} />)}
                     </datalist>
                   </div>
                 </div>
