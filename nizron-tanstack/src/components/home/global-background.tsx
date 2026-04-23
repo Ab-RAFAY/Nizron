@@ -1,30 +1,27 @@
-'use client';
-
-import { usePathname } from 'next/navigation';
+import { useRouterState } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import HeroBackground from './hero-background';
 
 export default function GlobalBackground() {
-  const pathname = usePathname();
+  const { location } = useRouterState();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Use a more robust check for home page
-  const isHome = pathname === '/' || pathname === '';
+  const isHome = location.pathname === '/' || location.pathname === '';
 
   if (!mounted) return null;
 
   return (
-    <div 
+    <div
       className={`fixed inset-0 z-0 transition-opacity duration-1000 pointer-events-none ${isHome ? 'opacity-40' : 'opacity-0'}`}
       style={{ visibility: isHome ? 'visible' : 'hidden' }}
     >
       <div className="absolute inset-0 bg-background-v grid-pattern opacity-50" />
       <div className="absolute inset-0 flex items-center justify-center">
-         <HeroBackground />
+        <HeroBackground />
       </div>
     </div>
   );
