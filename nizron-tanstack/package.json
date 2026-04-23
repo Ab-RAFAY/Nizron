@@ -34,6 +34,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "latest",
+    "@tanstack/start": "^1.120.20",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^22.19.17",
@@ -44,6 +45,7 @@
     "typescript": "^5.7.2",
     "vinxi": "^0.5.11",
     "vite": "^8.0.0",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^3.0.5"
   },
   "pnpm": {
