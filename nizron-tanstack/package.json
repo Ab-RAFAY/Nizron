@@ -38,5 +38,11 @@
     "vinxi": "^0.5.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.5"
+  },
+  "overrides": {
+    "@tanstack/start-server-core": "^1.167.43",
+    "@tanstack/start-client-core": "^1.167.43",
+    "@tanstack/router-core": "^1.167.43",
+    "@tanstack/history": "^1.161.6"
   }
 }
